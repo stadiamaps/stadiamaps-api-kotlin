@@ -2400,6 +2400,13 @@ components:
           type: number
           format: double
           description: The maximum longitude of the bounding box containing the route.
+      required:
+        - time
+        - length
+        - min_lat
+        - min_lon
+        - max_lat
+        - max_lon
     routeManeuver:
       type: object
       properties:

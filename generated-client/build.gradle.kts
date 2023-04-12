@@ -14,17 +14,17 @@ repositories {
 }
 
 dependencies {
-    val retrofitVersion = "2.9.0"
+    val retrofitVersion: String by project
 
     swaggerCodegen("org.openapitools:openapi-generator-cli:6.5.0")
 
     // Dependencies of the generated code. Check out `build.gradle` in your build folder later if you're curious.
-    api("com.squareup.moshi:moshi-kotlin:1.13.0")
-    api("com.squareup.moshi:moshi-adapters:1.13.0")
-    api("com.squareup.okhttp3:logging-interceptor:4.10.0")
-    api("com.squareup.retrofit2:retrofit:$retrofitVersion")
-    api("com.squareup.retrofit2:converter-moshi:$retrofitVersion")
-    api("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
+    implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
+    implementation("com.squareup.moshi:moshi-adapters:1.13.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+    implementation("com.squareup.retrofit2:converter-moshi:$retrofitVersion")
+    implementation("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
 }
 
 kotlin {
