@@ -17,3 +17,6 @@ the placeholder variable at the top of the file).
 You can either run in IntelliJ by clicking the play button in the gutter
 next to the `main` function, or by running `./gradlew run --quiet` (`gradlew.bat`
 on Windows) in your terminal.
+
+If you'd like a detailed explanation of what's going on, check out our full tutorial
+[over here](https://docs.stadiamaps.com/tutorials/getting-started-with-geospatial-apis-in-kotlin-openapi/)!
