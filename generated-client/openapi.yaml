@@ -1,13 +1,14 @@
 openapi: 3.0.3
 servers:
   - url: 'https://api.stadiamaps.com'
+  - url: 'https://api-eu.stadiamaps.com'
 info:
   description: >-
     The Stadia Maps Geospatial APIs provide you with the data you need to build awesome applications.
 
     All endpoints are versioned individually to allow for granular upgrades. We follow the [Semantic Versioning
     scheme](https://semver.org/).
-  version: 3.0.0
+  version: 4.0.0
   title: Stadia Maps Geospatial APIs
   contact:
     name: Stadia Maps Support
@@ -36,6 +37,8 @@ paths:
           schema:
             type: number
             format: double
+            minimum: -90
+            maximum: 90
         - name: lng
           in: query
           description: The longitude of the point you are interested in.
@@ -43,6 +46,8 @@ paths:
           schema:
             type: number
             format: double
+            minimum: -180
+            maximum: 180
         - name: timestamp
           in: query
           description: >-
@@ -58,6 +63,8 @@ paths:
           schema:
             type: integer
             format: int64
+            minimum: 0
+            maximum: 8200290900000  # Approximately 262,000 years in the future, at which point Chrono breaks
       responses:
         '200':
           description: Returns the time zone metadata.
@@ -72,7 +79,7 @@ paths:
       tags:
         - Geospatial
       operationId: elevation-service
-      summary: Get the elevation profile of a polyline.
+      summary: Get the elevation profile along a polyline or at a point.
       description: >-
         The Stadia elevation API allows you to get the elevation of any point on earth.
         You can pass either a simple set of points or a Google encoded polyline string.
@@ -97,7 +104,7 @@ paths:
       tags:
         - Routing
       operationId: route
-      summary: Get turn by turn routing between two or more locations.
+      summary: Get turn by turn routing instructions between two or more locations.
       description: >-
         The route (turn-by-turn) API computes routes between two or more locations. It supports a
         variety of tunable costing methods, and supports routing through intermediate waypoints and
@@ -125,7 +132,7 @@ paths:
       tags:
         - Routing
       operationId: nearest-roads
-      summary: Get the nearest roads to the set of input locations.
+      summary: Find the nearest roads to the set of input locations.
       description: >-
         The nearest roads API allows you query for detailed information about streets and intersections near the
         input locations.
@@ -396,7 +403,7 @@ paths:
       tags:
         - Routing
       operationId: time-distance-matrix
-      summary: Get a time distance matrix for the input start and end points.
+      summary: Calculate a time distance matrix for a grid of start and end points.
       description: >-
         The time distance matrix API lets you compare travel times between a set of possible start and end points.
         
@@ -422,7 +429,7 @@ paths:
       tags:
         - Routing
       operationId: isochrone
-      summary: Get an isochrone line for areas of equal travel time from a location.
+      summary: Calculate areas of equal travel time from a location.
       description: >-
         The isochrone API lets you compute or visualize areas of roughly equal travel time based on the routing graph.
         The resulting polygon can be rendered on a map and shaded much like elevation contours and used for exploring
@@ -552,7 +559,7 @@ paths:
       tags:
         - Routing
       operationId: optimized-route
-      summary: Get an optimized route given a start, end, and a set of intermediate points.
+      summary: Calculate an optimized route between a known start and end point.
       description: >-
         The optimized route API is a mix of the matrix and normal route API. For an optimized route,
         the start and end point are fixed, but the intermediate points will be re-ordered to form an
@@ -586,9 +593,9 @@ paths:
       tags:
         - Routing
       operationId: map-match
-      summary: Matches a recorded route such as a GPS trace to the road network.
+      summary: Match a recorded route to the road network.
       description: >-
-        The map matching service transforms a recorded route into navigation instructions like you would get from
+        The map matching API transforms a recorded route into navigation instructions like you would get from
         the `route` endpoint. The input can be in the form of either an encoded polyline, or (optionally) timestamped
         coordinates.
       security:
@@ -616,11 +623,12 @@ paths:
       tags:
         - Routing
       operationId: trace-attributes
-      summary: Matches a recorded route such as a GPS trace to the road network and inspects their attributes.
+      summary: Trace the attributes of roads visited on a route.
       description: >-
-        The map matching service transforms a recorded route into navigation instructions like you would get from
-        the `route` endpoint. The input can be in the form of either an encoded polyline, or (optionally) timestamped
-        coordinates.
+        The trace attributes endpoint retrieves detailed information along a route, returning details for each section
+        along the path, as well as any intersections encountered. In addition to tracing a recording route, this
+        is great for providing just-in-time info to navigation applications, enabling them to conserve resources by
+        omitting info like speed limits upfront that may be irrelevant if the user goes off-route.
       security:
         - ApiKeyAuth: [ ]
       requestBody:
@@ -636,6 +644,180 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/traceAttributesResponse'
+  /geocoding/v1/autocomplete:
+    get:
+      tags:
+        - Geocoding
+      operationId: autocomplete
+      summary: Search and geocode quickly based on partial input.
+      description: >-
+        Autocomplete enables interactive search-as-you-type user experiences, suggesting places as you type,
+        along with information that will help your users find the correct place quickly.
+      security:
+        - ApiKeyAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/searchText'
+        - $ref: '#/components/parameters/searchFocusLat'
+        - $ref: '#/components/parameters/searchFocusLon'
+        - $ref: '#/components/parameters/searchBoundaryRectMinLat'
+        - $ref: '#/components/parameters/searchBoundaryRectMaxLat'
+        - $ref: '#/components/parameters/searchBoundaryRectMinLon'
+        - $ref: '#/components/parameters/searchBoundaryRectMaxLon'
+        - $ref: '#/components/parameters/searchBoundaryCircleLat'
+        - $ref: '#/components/parameters/searchBoundaryCircleLon'
+        - $ref: '#/components/parameters/searchBoundaryCircleRadius'
+        - $ref: '#/components/parameters/searchBoundaryCountry'
+        - $ref: '#/components/parameters/searchBoundaryGID'
+        - $ref: '#/components/parameters/searchLayers'
+        - $ref: '#/components/parameters/searchSources'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/peliasLang'
+      responses:
+        '200':
+          description: Returns the collection of autocomplete results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/peliasResponse'
+        '400':
+          description: Bad request
+  /geocoding/v1/search:
+    get:
+      tags:
+        - Geocoding
+      operationId: search
+      summary: Search for location and other info using a place name or address (forward geocoding).
+      description: >-
+        The search endpoint lets you search for addresses, points of interest, and administrative areas.
+        This is most commonly used for forward geocoding applications where you need to find the geographic
+        coordinates of an address.
+      security:
+        - ApiKeyAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/searchText'
+        - $ref: '#/components/parameters/searchFocusLat'
+        - $ref: '#/components/parameters/searchFocusLon'
+        - $ref: '#/components/parameters/searchBoundaryRectMinLat'
+        - $ref: '#/components/parameters/searchBoundaryRectMaxLat'
+        - $ref: '#/components/parameters/searchBoundaryRectMinLon'
+        - $ref: '#/components/parameters/searchBoundaryRectMaxLon'
+        - $ref: '#/components/parameters/searchBoundaryCircleLat'
+        - $ref: '#/components/parameters/searchBoundaryCircleLon'
+        - $ref: '#/components/parameters/searchBoundaryCircleRadius'
+        - $ref: '#/components/parameters/searchBoundaryCountry'
+        - $ref: '#/components/parameters/searchBoundaryGID'
+        - $ref: '#/components/parameters/searchLayers'
+        - $ref: '#/components/parameters/searchSources'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/peliasLang'
+      responses:
+        '200':
+          description: Returns the collection of search results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/peliasResponse'
+        '400':
+          description: Bad request
+  /geocoding/v1/search/structured:
+    get:
+      tags:
+        - Geocoding
+      operationId: search-structured
+      summary: Find locations matching components (structured forward geocoding).
+      description: >-
+        The structured search endpoint lets you search for addresses, points of interest, and administrative areas.
+        Rather than a single string which the API must infer meaning from, the structured search endpoint allows you to
+        specify the known components upfront, which is useful in many forward geocoding workflows.
+      security:
+        - ApiKeyAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/searchAddress'
+        - $ref: '#/components/parameters/searchNeighborhood'
+        - $ref: '#/components/parameters/searchBorough'
+        - $ref: '#/components/parameters/searchLocality'
+        - $ref: '#/components/parameters/searchCounty'
+        - $ref: '#/components/parameters/searchRegion'
+        - $ref: '#/components/parameters/searchPostalCode'
+        - $ref: '#/components/parameters/searchCountry'
+        - $ref: '#/components/parameters/searchFocusLat'
+        - $ref: '#/components/parameters/searchFocusLon'
+        - $ref: '#/components/parameters/searchBoundaryRectMinLat'
+        - $ref: '#/components/parameters/searchBoundaryRectMaxLat'
+        - $ref: '#/components/parameters/searchBoundaryRectMinLon'
+        - $ref: '#/components/parameters/searchBoundaryRectMaxLon'
+        - $ref: '#/components/parameters/searchBoundaryCircleLat'
+        - $ref: '#/components/parameters/searchBoundaryCircleLon'
+        - $ref: '#/components/parameters/searchBoundaryCircleRadius'
+        - $ref: '#/components/parameters/searchBoundaryCountry'
+        - $ref: '#/components/parameters/searchBoundaryGID'
+        - $ref: '#/components/parameters/searchLayers'
+        - $ref: '#/components/parameters/searchSources'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/peliasLang'
+      responses:
+        '200':
+          description: Returns the collection of search results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/peliasResponse'
+        '400':
+          description: Bad request
+  /geocoding/v1/reverse:
+    get:
+      tags:
+        - Geocoding
+      operationId: reverse
+      summary: Find places and addresses near geographic coordinates (reverse geocoding).
+      description: >-
+        Reverse geocoding and search finds places and addresses near any geographic coordinates.
+      security:
+        - ApiKeyAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/reverseLat'
+        - $ref: '#/components/parameters/reverseLon'
+        - $ref: '#/components/parameters/searchBoundaryCircleRadius'
+        - $ref: '#/components/parameters/searchLayers'
+        - $ref: '#/components/parameters/searchSources'
+        - $ref: '#/components/parameters/searchBoundaryCountry'
+        - $ref: '#/components/parameters/searchBoundaryGID'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/peliasLang'
+      responses:
+        '200':
+          description: Returns the collection of search results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/peliasResponse'
+        '400':
+          description: Bad request
+  /geocoding/v1/place:
+    get:
+      tags:
+        - Geocoding
+      operationId: place
+      summary: Retrieve details of a place using its GID.
+      description: >-
+        Many search result components include an associated GID field (for example, an address may have a
+        `localadmin_gid`). The place endpoint lets you look up these places directly by ID. Note that these
+        IDs are not stable for all sources. See the [online documentation](https://docs.stadiamaps.com/geocoding-search-autocomplete/place-lookup/)
+        for details.
+      security:
+        - ApiKeyAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/placeIDs'
+        - $ref: '#/components/parameters/peliasLang'
+      responses:
+        '200':
+          description: Returns the collection of search results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/peliasResponse'
+        '400':
+          description: Bad request
 components:
   securitySchemes:
     ApiKeyAuth:
@@ -1657,6 +1839,7 @@ components:
             - left
             - right
             - both
+            - none
         density:
           type: integer
         speed_limit:
@@ -2042,6 +2225,7 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/coordinate'
+              minItems: 1
             costing:
               $ref: '#/components/schemas/costingModel'
             costing_options:
@@ -2299,6 +2483,7 @@ components:
         - steps
         - path
         - pedestrian
+        - pedestrian_crossing
         - bridleway
         - rest_area
         - service_area
@@ -2412,7 +2597,7 @@ components:
       properties:
         type:
           type: integer
-          description: >-
+          description: |
             The type of route maneuver.
 
             | Code | Type                                |
@@ -3102,19 +3287,25 @@ components:
         sources:
           type: array
           items:
-            $ref: '#/components/schemas/coordinate'
+            type: array
+            items:
+              $ref: '#/components/schemas/coordinate'
           description: The list of starting locations
           minItems: 1
         targets:
           type: array
           items:
-            $ref: '#/components/schemas/coordinate'
+            type: array
+            items:
+              $ref: '#/components/schemas/coordinate'
           description: The list of ending locations
           minItems: 1
         sources_to_targets:
           type: array
           items:
-            $ref: '#/components/schemas/matrixDistance'
+            type: array
+            items:
+              $ref: '#/components/schemas/matrixDistance'
           description: >-
             The matrix of starting and ending locations, along with the computed distance and travel time.
             The array is row-ordered. This means that the time and distance from the first location to all others
@@ -3287,6 +3478,352 @@ components:
               items:
                 $ref: '#/components/schemas/traceAttributesBaseResponse'
               description: Alternate paths, if any, that were not classified as the best match.
+    geocodingObject:
+       type: object
+       properties:
+         attribution:
+           type: string
+           format: uri
+           description: >-
+             A URL containing attribution information. If you are not using Stadia Maps and our
+             standard attribution already for your basemaps, you must include this attribution link
+             somewhere in your website/app.
+         query:
+           type: object
+           additionalProperties: true
+           description: >-
+             Technical details of the query. This is most useful for debugging during development.
+             See the full example for the list of properties; these should be self-explanatory, so we
+             don't enumerate them in the spec.
+         warnings:
+           type: array
+           items:
+             type: string
+           description: >-
+             An array of non-critical warnings. This is normally for informational/debugging purposes and
+             not a serious problem.
+         errors:
+           type: array
+           items:
+             type: string
+           description: >-
+             An array of more serious errors (for example, omitting a required parameter). Don’t ignore these.
+    geoJSONGeometryBase:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          enum:
+            - Point
+            - MultiPoint
+            - LineString
+            - MultiLineString
+            - Polygon
+            - MultiPolygon
+    geoJSONPoint:
+      allOf:
+        - $ref: '#/components/schemas/geoJSONGeometryBase'
+        - type: object
+          required:
+            - coordinates
+          properties:
+            coordinates:
+              type: array
+              minItems: 2
+              maxItems: 3
+              items:
+                type: number
+                format: double
+    geoJSONLineString:
+      allOf:
+        - $ref: '#/components/schemas/geoJSONGeometryBase'
+        - type: object
+          required:
+            - coordinates
+          properties:
+            coordinates:
+              type: array
+              items:
+                type: array
+                items:
+                  type: number
+                  format: double
+                  minItems: 2
+                  maxItems: 3
+    geoJSONGeometry:
+      oneOf:
+        - $ref: '#/components/schemas/geoJSONPoint'
+        - $ref: '#/components/schemas/geoJSONLineString'
+      discriminator:
+        propertyName: type
+        mapping:
+          Point: '#/components/schemas/GeoJSONPoint'
+          LineString: '#/components/schemas/GeoJSONLineString'
+    peliasGeoJSONProperties:
+      type: object
+      additionalProperties: true
+      properties:
+        gid:
+          type: string
+          description: >-
+            A scoped GID for this result. This can be passed to the place
+            endpoint. Note that these are not always stable. For OSM, Geonames, and Who's on First,
+            these are usually stable, but for other sources like OSM, no stability is guaranteed.
+        source_id:
+          type: string
+          description: >-
+            An ID referencing the original data source (specified via source) for the result. These IDs are specific
+            to the source that they originated from. For example, in the case of OSM, these typically look like
+            way/123 or point/123.
+        label:
+          type: string
+          description: >-
+            A full, human-readable label. However, you may not necessarily want to use this; be sure to read the docs
+            for name, locality, and region before making a decision. This field is mostly localized. The order of
+            components is generally locally correct (ex: for an address in South Korea, the house number appears after
+            the street name). However, components will use a request language equivalent if one exists (ex: Seoul
+            instead of 서울 if lang=en).
+        name:
+          type: string
+          description: >-
+            The name of the place, the street address including house number, or label of similar relevance.
+            If your app is localized to a specific region, you may get better display results by combining name,
+            locality OR region (or neither?), and postal code together in the local format. Experiment with what
+            works best for your use case.
+        accuracy:
+          type: string
+          enum:
+            - point
+            - centroid
+          description: >-
+            The accuracy of the geographic coordinates in the result. This value is a property of the result
+            itself and won't change based on the query.
+            
+            A point result means that the record can reasonably be represented by a single geographic point.
+            Addresses, venues, or interpolated addresses usually have point accuracy.
+            
+            Larger areas, such as a city or country, cannot be represented by a single point, so a centroid
+            is given instead.
+        addendum:
+          type: object
+          additionalProperties: true
+          description: >-
+            Optional additional information from the underlying data source (ex: OSM). This includes select
+            fields. The most useful fields are mapped in the definition here, but others may be available.
+          properties:
+            osm:
+              type: object
+              additionalProperties: true
+              properties:
+                website:
+                  type: string
+                  format: uri
+                wikipedia:
+                  type: string
+                wikidata:
+                  type: string
+                phone:
+                  type: string
+        continent:
+          type: string
+        continent_gid:
+          type: string
+        country:
+          type: string
+        country_gid:
+          type: string
+        neighbourhood:
+          type: string
+        neighbourhood_gid:
+          type: string
+        postalcode:
+          type: string
+        street:
+          type: string
+        housenumber:
+          type: string
+        locality:
+          type: string
+          description: >-
+            The city, village, town, etc. that the place / address is part of. Note that values may not always
+            match postal or local conventions perfectly.
+        lecality_gid:
+          type: string
+        county:
+          type: string
+          description: >-
+            Administrative divisions between localities and regions. Useful for disambiguating nearby
+            results with similar names.
+        region:
+          type: string
+          description: >-
+            Typically the first administrative division within a country.
+            For example, a US state or a Canadian province.
+    peliasGeoJSONFeature:
+      type: object
+      required:
+        - type
+        - geometry
+      properties:
+        type:
+          type: string
+          enum:
+            - Feature
+        geometry:
+          $ref: '#/components/schemas/geoJSONPoint'
+        properties:
+          $ref: '#/components/schemas/peliasGeoJSONProperties'
+        id:
+          type: string
+    peliasResponse:
+      type: object
+      properties:
+        geocoding:
+          allOf:
+            - $ref: '#/components/schemas/geocodingObject'
+        bbox:
+          type: array
+          minItems: 4
+          maxItems: 4
+          items:
+            type: number
+            format: double
+          description: >-
+            An array of 4 floating point numbers representing the (W, S, E, N) extremes of the features found.
+        features:
+          type: array
+          items:
+            $ref: '#/components/schemas/peliasGeoJSONFeature'
+      required:
+        - geocoding
+        - features
+      example:
+        {
+          "geocoding": {
+            "version": "0.2",
+            "attribution": "https://stadiamaps.com/attribution",
+            "query": {
+              "text": "1600 Pennsylvania Ave NW",
+              "size": 10,
+              "private": false,
+              "lang": {
+                "name": "English",
+                "iso6391": "en",
+                "iso6393": "eng",
+                "via": "default",
+                "defaulted": true
+              },
+              "querySize": 20,
+              "parser": "libpostal",
+              "parsed_text": {
+                "housenumber": "1600",
+                "street": "pennsylvania ave nw"
+              }
+            },
+            "engine": {
+              "name": "Pelias",
+              "author": "Mapzen",
+              "version": "1.0"
+            },
+            "timestamp": 1679043782383
+          },
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  -77.036547,
+                  38.897675
+                ]
+              },
+              "properties": {
+                "id": "us/dc/statewide:aa53d4bd0fe295be",
+                "gid": "openaddresses:address:us/dc/statewide:aa53d4bd0fe295be",
+                "layer": "address",
+                "source": "openaddresses",
+                "source_id": "us/dc/statewide:aa53d4bd0fe295be",
+                "country_code": "US",
+                "name": "1600 Pennsylvania Avenue NW",
+                "housenumber": "1600",
+                "street": "Pennsylvania Avenue NW",
+                "postalcode": "20500",
+                "confidence": 1,
+                "match_type": "exact",
+                "accuracy": "point",
+                "country": "United States",
+                "country_gid": "whosonfirst:country:85633793",
+                "country_a": "USA",
+                "region": "District of Columbia",
+                "region_gid": "whosonfirst:region:85688741",
+                "region_a": "DC",
+                "county": "District of Columbia",
+                "county_gid": "whosonfirst:county:1377370667",
+                "county_a": "DI",
+                "locality": "Washington",
+                "locality_gid": "whosonfirst:locality:85931779",
+                "neighbourhood": "White House Grounds",
+                "neighbourhood_gid": "whosonfirst:neighbourhood:1108724059",
+                "continent": "North America",
+                "continent_gid": "whosonfirst:continent:102191575",
+                "label": "1600 Pennsylvania Avenue NW, Washington, DC, USA"
+              }
+            }
+          ],
+          "bbox": [
+            -77.036547,
+            38.897675,
+            -77.036547,
+            38.897675
+          ]
+        }
+    peliasLayer:
+      type: string
+      enum:
+        - venue
+        - address
+        - street
+        - country
+        - macroregion
+        - region
+        - macrocounty
+        - county
+        - locality
+        - localadmin
+        - borough
+        - neighbourhood
+        - postalcode
+        - coarse
+      description: |
+        Our database is organized into several layers (in the GIS sense of the term) as follows:
+        
+        - `venue`: Points of interest, businesses, and things with walls
+        - `address`: Places with a street address
+        - `street`: Streets, roads, highways
+        - `county`: Places that issue passports, nations, nation-states
+        - `macroregion`: A related group of regions (mostly in Europe)
+        - `region`: The first administrative division within a country (usually states and provinces)
+        - `macrocounty`: A related group of counties (mostly in Europe)
+        - `county`: Official governmental areas; usually bigger than a locality, but almost always smaller than a region
+        - `locality`: Towns, hamlets, cities, etc.
+        - `localadmin`: Local administrative boundaries
+        - `borough`: Local administrative boundaries within cities (not widely used, but present in places such as NYC and Mexico City)
+        - `neighbourhood`: Social communities and neighborhoods (note the British spelling in the API!)
+        - `postalcode`: Postal codes used by mail services (note: not used for reverse geocoding)
+        - `coarse`: An alias for simultaneously using all administrative layers (everything except `venue` and `address`)
+    peliasSource:
+      type: string
+      enum:
+        - openstreetmap
+        - openaddresses
+        - whosonfirst
+        - geonames
+      description: >-
+        Our database contains info from multiple sources. These identifiers can be used to either
+        limit search results or to determine the relevance of a result.
     warning:
       type: object
       properties:
@@ -3294,3 +3831,239 @@ components:
           type: string
         code:
           type: integer
+  parameters:
+    searchText:
+      name: text
+      in: query
+      description: The place name (address, venue name, etc.) to search for.
+      required: true
+      schema:
+        type: string
+      example: 1600 Pennsylvania Ave NW
+    searchFocusLat:
+      name: focus.point.lat
+      in: query
+      description: The latitude of the point to focus the search on. This will bias results toward the focus point. Requires `focus.point.lon`.
+      required: false
+      schema:
+        type: number
+        format: double
+    searchFocusLon:
+      name: focus.point.lon
+      in: query
+      description: The longitude of the point to focus the search on. This will bias results toward the focus point. Requires `focus.point.lat`.
+      required: false
+      schema:
+        type: number
+        format: double
+    searchBoundaryRectMinLat:
+      name: boundary.rect.min_lat
+      in: query
+      description: >- 
+        Defines the min latitude component of a bounding box to limit the search to. Requires all other `boundary.rect` parameters to be specified.
+      required: false
+      schema:
+        type: number
+        format: double
+    searchBoundaryRectMaxLat:
+      name: boundary.rect.max_lat
+      in: query
+      description: >-
+        Defines the max latitude component of a bounding box to limit the search to. Requires all other `boundary.rect` parameters to be specified.
+      required: false
+      schema:
+        type: number
+        format: double
+    searchBoundaryRectMinLon:
+      name: boundary.rect.min_lon
+      in: query
+      description: >-
+        Defines the min longitude component of a bounding box to limit the search to. Requires all other `boundary.rect` parameters to be specified.
+      required: false
+      schema:
+        type: number
+        format: double
+    searchBoundaryRectMaxLon:
+      name: boundary.rect.max_lon
+      in: query
+      description: >-
+        Defines the max longitude component of a bounding box to limit the search to. Requires all other `boundary.rect` parameters to be specified.
+      required: false
+      schema:
+        type: number
+        format: double
+    searchBoundaryCircleLat:
+      name: boundary.circle.lat
+      in: query
+      description: >-
+        The latitude of the center of a circle to limit the search to. Requires `boundary.circle.lon`.
+      schema:
+        type: number
+        format: double
+    searchBoundaryCircleLon:
+      name: boundary.circle.lon
+      in: query
+      description: >-
+        The longitude of the center of a circle to limit the search to. Requires `boundary.circle.lat`.
+      schema:
+        type: number
+        format: double
+    searchBoundaryCircleRadius:
+      name: boundary.circle.radius
+      in: query
+      description: >-
+        The radius of the circle (in kilometers) to limit the search to. Defaults to 50km if unspecified.
+      schema:
+        type: number
+        format: double
+    searchBoundaryCountry:
+      name: boundary.country
+      in: query
+      description: >-
+        A list of countries to limit the search to. These may be either full names (ex: Canada), or an ISO
+        3116-1 alpha-2 or alpha-3 code. Prefer ISO codes when possible.
+      schema:
+        type: array
+        items:
+          type: string
+      style: form
+      explode: false
+    searchBoundaryGID:
+      name: boundary.gid
+      in: query
+      description: The Pelias GID of an area to limit the search to.
+      schema:
+        type: string
+    searchLayers:
+      name: layers
+      in: query
+      description: A list of layers to limit the search to.
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/peliasLayer'
+      style: form
+      explode: false
+    searchSources:
+      name: sources
+      in: query
+      description: A list of sources to limit the search to.
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/peliasSource'
+      style: form
+      explode: false
+    searchAddress:
+      name: address
+      in: query
+      description: A street name, optionally with a house number.
+      required: false
+      schema:
+        type: string
+      example: 11 Wall Street
+    searchNeighborhood:
+      name: neighbourhood
+      in: query
+      description: Varies by area, but has a locally specific meaning (NOT always an official administrative unit).
+      required: false
+      schema:
+        type: string
+      example: Financial District
+    searchBorough:
+      name: borough
+      in: query
+      description: A unit within a city (not widely used, but present in places like NYC and Mexico City).
+      required: false
+      schema:
+        type: string
+      example: Manhattan
+    searchLocality:
+      name: locality
+      in: query
+      description: The city, village, town, etc. that the place/address is part of.
+      required: false
+      schema:
+        type: string
+      example: New York
+    searchCounty:
+      name: county
+      in: query
+      description: >-
+        Administrative divisions between localities and regions. Not commonly used as input to structured geocoding.
+      required: false
+      schema:
+        type: string
+      example: New York County
+    searchRegion:
+      name: region
+      in: query
+      description: Typically the first administrative division within a country. For example, a US state or a Canadian province.
+      required: false
+      schema:
+        type: string
+      example: New York
+    searchPostalCode:
+      name: postalcode
+      in: query
+      description: A mail sorting code.
+      required: false
+      schema:
+        type: string
+      example: 10005
+    searchCountry:
+      name: country
+      in: query
+      description: >-
+        A full name (ex: Canada), or a 2 or 3 character ISO code. Prefer ISO codes when possible.
+      required: false
+      schema:
+        type: string
+      example: USA
+    reverseLat:
+      name: point.lat
+      in: query
+      required: true
+      description: >-
+        The latitude of the point at which to perform the search.
+      schema:
+        type: number
+        format: double
+      example: 48.848268
+    reverseLon:
+      name: point.lon
+      in: query
+      required: true
+      description: >-
+        The longitude of the point at which to perform the search.
+      schema:
+        type: number
+        format: double
+      example: 2.294471
+    placeIDs:
+      name: ids
+      in: query
+      description: A list of Pelias GIDs to search for.
+      schema:
+        type: array
+        items:
+          type: string
+      style: form
+      explode: false
+    size:
+      name: size
+      in: query
+      description: The maximum number of results to return.
+      schema:
+        type: integer
+    peliasLang:
+      name: lang
+      in: query
+      description: >-
+        A BCP47 language tag which specifies a preference for localization of results.
+        By default, results are in the default locale of the source data, but specifying a language
+        will attempt to localize the results. Note that while a `langtag` (in RFC 5646 terms) can
+        contain script, region, etc., only the `language` portion, an ISO 639 code, will be considered.
+        So `en-US` and `en-GB` will both be treated as English.
+      schema:
+        type: string
