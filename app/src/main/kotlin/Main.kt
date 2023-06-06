@@ -21,7 +21,7 @@ fun testGeospatialApis(client: ApiClient) {
         println("Request failed with error code ${tzRes.code()}")
     }
 
-    val heightRes = geoService.elevationService(HeightRequest(shape = listOf(seoul))).execute()
+    val heightRes = geoService.elevation(HeightRequest(shape = listOf(seoul))).execute()
     if (heightRes.isSuccessful) {
         println(heightRes.body())
     } else {
