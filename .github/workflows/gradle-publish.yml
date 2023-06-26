@@ -29,6 +29,7 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         arguments: build
+      env:
         STADIA_API_KEY: ${{ secrets.STADIA_API_KEY }}
 
     # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
