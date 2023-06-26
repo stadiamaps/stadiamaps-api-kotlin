@@ -29,7 +29,7 @@ repositories {
         url = uri("https://maven.pkg.github.com/stadiamaps/stadiamaps-api-kotlin")
         credentials {
             username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-            password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+            password = project.findProperty("gpr.token") as String? ?: System.getenv("TOKEN")
         }
     }
 }
@@ -45,7 +45,7 @@ repositories {
         url = uri("https://maven.pkg.github.com/stadiamaps/stadiamaps-api-kotlin")
         credentials {
             username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-            password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
         }
    }
 }
