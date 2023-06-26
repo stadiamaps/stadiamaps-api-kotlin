@@ -1,9 +1,9 @@
-import org.openapitools.client.apis.GeocodingApi
-import org.openapitools.client.apis.GeospatialApi
-import org.openapitools.client.apis.RoutingApi
-import org.openapitools.client.auth.ApiKeyAuth
-import org.openapitools.client.infrastructure.ApiClient
-import org.openapitools.client.models.*
+import com.stadiamaps.api.apis.GeocodingApi
+import com.stadiamaps.api.apis.GeospatialApi
+import com.stadiamaps.api.apis.RoutingApi
+import com.stadiamaps.api.auth.ApiKeyAuth
+import com.stadiamaps.api.infrastructure.ApiClient
+import com.stadiamaps.api.models.*
 
 private const val apiKey = "YOUR-API-KEY"
 

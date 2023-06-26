@@ -19,8 +19,12 @@ for details.
 
 Add the repository to your `repositories` block like so.
 
-```kotlin title="build.gradle.kts"
+Kotlin build script (`build.gradle.kts`):
+
+```kotlin
 repositories {
+    mavenCentral()
+    
     maven {
         url = uri("https://maven.pkg.github.com/stadiamaps/stadiamaps-api-kotlin")
         credentials {
@@ -31,8 +35,12 @@ repositories {
 }
 ```
 
-```groovy title="build.gradle
+Groovy build script (`build.gradle`):
+
+```groovy
 repositories {
+    mavenCentral()
+    
     maven {
         url = uri("https://maven.pkg.github.com/stadiamaps/stadiamaps-api-kotlin")
         credentials {

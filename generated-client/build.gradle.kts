@@ -73,6 +73,7 @@ swaggerSources {
       code(delegateClosureOf<GenerateSwaggerCode> {
           language = "kotlin"
           library = "jvm-retrofit2"
+          additionalProperties = mapOf("groupId" to "com.stadiamaps", "packageName" to "com.stadiamaps.api")
           dependsOn(validationTask)
       })
   }

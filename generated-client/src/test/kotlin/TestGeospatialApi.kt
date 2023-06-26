@@ -1,16 +1,16 @@
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.openapitools.client.apis.GeospatialApi
-import org.openapitools.client.auth.ApiKeyAuth
-import org.openapitools.client.infrastructure.ApiClient
-import org.openapitools.client.models.Coordinate
-import org.openapitools.client.models.HeightRequest
+import com.stadiamaps.api.apis.GeospatialApi
+import com.stadiamaps.api.auth.ApiKeyAuth
+import com.stadiamaps.api.infrastructure.ApiClient
+import com.stadiamaps.api.models.Coordinate
+import com.stadiamaps.api.models.HeightRequest
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
 internal class TestGeospatialApi {
-    val seoul = Coordinate(37.56, 126.99)
+    private val seoul = Coordinate(37.56, 126.99)
     private val apiKey = System.getenv("STADIA_API_KEY") ?: throw RuntimeException("API Key not set")
     private lateinit var service: GeospatialApi
 
