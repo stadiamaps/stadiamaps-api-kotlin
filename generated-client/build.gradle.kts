@@ -25,10 +25,16 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
     implementation("com.squareup.retrofit2:converter-moshi:$retrofitVersion")
     implementation("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
+
+    testImplementation(kotlin("test"))
 }
 
 kotlin {
     jvmToolchain(17)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 // Bit of a hack because the generator can't download files at the time of this writing:
@@ -60,6 +66,7 @@ tasks.named("generateSwaggerCode").configure {
 swaggerSources {
   register("stadiamaps") {
       val validationTask = validation
+      validationTask.dependsOn("downloadOpenAPISpec")
 
       setInputFile(file("openapi.yaml"))
       code(delegateClosureOf<GenerateSwaggerCode> {

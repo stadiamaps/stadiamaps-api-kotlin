@@ -5,7 +5,7 @@ import org.openapitools.client.auth.ApiKeyAuth
 import org.openapitools.client.infrastructure.ApiClient
 import org.openapitools.client.models.*
 
-const val apiKey = "YOUR-API-KEY"
+private const val apiKey = "YOUR-API-KEY"
 
 val seoul = Coordinate(37.56, 126.99)
 val tll = RoutingWaypoint(59.416411, 24.798778)
