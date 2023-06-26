@@ -1,4 +1,4 @@
-# OpenAPI Kotlin Demo
+# Stadia Maps Kotlin SDK
 
 This SDK helps you access the full range of geospatial APIs from Stadia Maps using Kotlin and other JVM languages.
 We've derived everything from our official API spec, so you'll get all the goodies like autocomplete, model definitions,
