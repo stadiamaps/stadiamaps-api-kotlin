@@ -104,7 +104,9 @@ publishing {
     }
 
     publications {
-        create<MavenPublication>("github") {
+        register<MavenPublication>("gpr") {
+            from(components["java"])
+
             groupId = "com.stadiamaps"
             artifactId = "api"
             version = "0.1.0-SNAPSHOT"
