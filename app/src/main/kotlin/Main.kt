@@ -41,6 +41,13 @@ fun testRoutingApis(client: ApiClient) {
     } else {
         println("Request failed with error code ${route.code()}")
     }
+
+    val matrix = routingService.timeDistanceMatrix(MatrixRequest(listOf(Coordinate(tll.lat, tll.lon)), listOf(Coordinate(kultuurikatel.lat, kultuurikatel.lon)), MatrixCostingModel.pedestrian)).execute()
+    if (matrix.isSuccessful) {
+        println("Found matrix response! ${matrix.body()?.sourcesToTargets}")
+    } else {
+        println("Matrix failed with error code: ${matrix.code()}")
+    }
 }
 
 fun testGeocodingApis(client: ApiClient) {

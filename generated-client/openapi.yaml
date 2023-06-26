@@ -5,10 +5,7 @@ servers:
 info:
   description: >-
     The Stadia Maps Geospatial APIs provide you with the data you need to build awesome applications.
-
-    All endpoints are versioned individually to allow for granular upgrades. We follow the [Semantic Versioning
-    scheme](https://semver.org/).
-  version: 5.0.0
+  version: 5.0.4
   title: Stadia Maps Geospatial APIs
   contact:
     name: Stadia Maps Support
@@ -1926,7 +1923,6 @@ components:
       required:
         - costing
     mapMatchRequest:
-      type: object
       allOf:
         - $ref: '#/components/schemas/baseTraceRequest'
         - type: object
@@ -2197,6 +2193,7 @@ components:
     transitInfo:
       type: object
       description: Public transit info (not currently supported).
+      additionalProperties: true
     routeSummary:
       type: object
       properties:
@@ -3291,6 +3288,7 @@ components:
       type: object
       required:
         - features
+        - type
       properties:
         id:
           type: string
@@ -3298,6 +3296,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/isochroneFeature'
+        type:
+          type: string
+          enum:
+            - FeatureCollection
       example:
         {
           "features": [
@@ -3413,12 +3415,12 @@ components:
           $ref: '#/components/schemas/isochroneProperties'
         geometry:
           type: object
+          # Bit of a cop-out for now since many client generators choke on the complexity of GeoJSON
           additionalProperties: true
         type:
           type: string
           enum:
-            - LineString
-            - Polygon
+            - Feature
     isochroneProperties:
       type: object
       properties:
@@ -4164,7 +4166,7 @@ components:
           description: >-
             The city, village, town, etc. that the place / address is part of. Note that values may not always
             match postal or local conventions perfectly.
-        lecality_gid:
+        locality_gid:
           type: string
         county:
           type: string
@@ -4193,6 +4195,15 @@ components:
           $ref: '#/components/schemas/geoJSONPoint'
         properties:
           $ref: '#/components/schemas/peliasGeoJSONProperties'
+        bbox:
+          type: array
+          minItems: 4
+          maxItems: 4
+          items:
+            type: number
+            format: double
+          description: >-
+            An array of 4 floating point numbers representing the (W, S, E, N) extremes of the features found.
         id:
           type: string
     peliasResponse:
@@ -4315,6 +4326,13 @@ components:
         - neighbourhood
         - postalcode
         - coarse
+        - dependency
+        - macrohood
+        - marinearea
+        - disputed
+        - empire
+        - continent
+        - ocean
       description: |
         Our database is organized into several layers (in the GIS sense of the term) as follows:
         
@@ -4332,6 +4350,8 @@ components:
         - `neighbourhood`: Social communities and neighborhoods (note the British spelling in the API!)
         - `postalcode`: Postal codes used by mail services (note: not used for reverse geocoding)
         - `coarse`: An alias for simultaneously using all administrative layers (everything except `venue` and `address`)
+        - `marinearea`: Places with fishes and boats.
+        - `ocean`: A really big marine area.
     peliasSource:
       type: string
       enum:
