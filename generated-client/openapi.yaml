@@ -5,7 +5,7 @@ servers:
 info:
   description: >-
     The Stadia Maps Geospatial APIs provide you with the data you need to build awesome applications.
-  version: 5.0.4
+  version: 5.0.5
   title: Stadia Maps Geospatial APIs
   contact:
     name: Stadia Maps Support
@@ -3458,16 +3458,28 @@ components:
           description: The input polyline.
         height:
           type: array
-          description: The list of heights for each point, in meters. Present if `range` is `false`.
+          description: >-
+            The list of heights for each point, in meters. Present only if `range` is `false`.
+            Null values indicate missing data.
           items:
             type: integer
         range_height:
           type: array
-          description: The list of horizontal distances and heights (respectively) for each point, in meters. Present if `range` is `true`.
+          description: >-
+            The list of ranges and heights for each point in the shape, where each entry is an array of length 2.
+            Present only if `range` is `true`.
+            In each pair, the first element represents the range or distance along the input locations. It is the
+            cumulative distance along the previous coordinates in the shape up to the current coordinate.
+            This value for the first coordinate in the shape will always be 0.
+            The second element in the pair represents the height or elevation at the associated coordinate. The height
+            is null if no height data exists for a given location.
+            Both values are expressed in meters.
           items:
             type: array
             items:
               type: integer
+            minLength: 2
+            maxLength: 2
       example:
         {
           "id": "kesklinn",

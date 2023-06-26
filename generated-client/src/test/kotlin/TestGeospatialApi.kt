@@ -24,16 +24,15 @@ internal class TestGeospatialApi {
     @Test
     fun testTzLookup() {
         val res = service.tzLookup(seoul.lat, seoul.lon).execute()
-        assertTrue(res.isSuccessful)
-        assertEquals("Asia/Seoul", res.body()?.tzId)
+        val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
+
+        assertEquals("Asia/Seoul", body.tzId)
     }
 
     @Test
     fun testElevation() {
         val req = HeightRequest(id = "Seoul", shape = listOf(seoul))
         val res = service.elevation(req).execute()
-        assertTrue(res.isSuccessful)
-
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals(req.id, body.id)
@@ -45,8 +44,6 @@ internal class TestGeospatialApi {
     fun testElevationRange() {
         val req = HeightRequest(id = "Seoul", shape = listOf(seoul), range = true)
         val res = service.elevation(req).execute()
-        assertTrue(res.isSuccessful)
-
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals(req.id, body.id)
