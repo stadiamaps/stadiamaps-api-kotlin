@@ -1,22 +1,81 @@
 # OpenAPI Kotlin Demo
 
-This is a simple example project demonstrating how to integrate the
-[Stadia Maps APIs](https://docs.stadiamaps.com/api-reference/) into a Kotlin project
-with an auto-generated OpenAPI client.
+This SDK helps you access the full range of geospatial APIs from Stadia Maps using Kotlin and other JVM languages.
+We've derived everything from our official API spec, so you'll get all the goodies like autocomplete, model definitions,
+and other documentation in your favorite editor.
 
-This can serve as a rough template for any JVM-based language integration, as well as a
-playground to try out the Stadia Maps API in an IDE such as IntelliJ.
+This package specifically targets Kotlin and retrofit2. If you'd prefer to customize the generated code to
+your stack (ex: using okhttp), we've written a tutorial on generating code within JVM projects
+[over here](https://docs.stadiamaps.com/tutorials/getting-started-with-geospatial-apis-in-kotlin-openapi/).
 
-## Running the project
+## Getting started with Gradle
 
-First, you'll need a Stadia Maps API key! You can get one for free (no credit card required).
+### Authenticate to GitHub Packages
+
+You'll need an access token to install from GitHub packages. See the [GitHub Packages docs](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#authenticating-to-github-packages)
+for details.
+
+### Add the repository to build script
+
+Add the repository to your `repositories` block like so.
+
+```kotlin title="build.gradle.kts"
+repositories {
+    maven {
+        url = uri("https://maven.pkg.github.com/stadiamaps/stadiamaps-api-kotlin")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+        }
+    }
+}
+```
+
+```groovy title="build.gradle
+repositories {
+    maven {
+        url = uri("https://maven.pkg.github.com/stadiamaps/stadiamaps-api-kotlin")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+        }
+   }
+}
+```
+
+### Add dependencies
+
+Now you're ready to add the package and its dependencies.
+
+```kotlin
+dependencies {
+    val retrofitVersion = "2.9.0"
+    
+    // API package
+    implementation("com.stadiamaps.api:1.0.0")
+
+    // Dependencies
+    implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
+    implementation("com.squareup.moshi:moshi-adapters:1.14.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+    implementation("com.squareup.retrofit2:converter-moshi:$retrofitVersion")
+    implementation("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
+}
+```
+
+## Usage
+
+Next, you'll need a Stadia Maps API key. You can create one for free (no credit card required).
 Get one at https://client.stadiamaps.com/. After signing up, create a property and you'll get
-the flow. Then, you'll need to copy your API key and put it in `Main.kt` (see
-the placeholder variable at the top of the file).
+the flow.
 
-You can either run in IntelliJ by clicking the play button in the gutter
-next to the `main` function, or by running `./gradlew run --quiet` (`gradlew.bat`
-on Windows) in your terminal.
+See the [example app](example/src/main/kotlin/Main.kt) or [integration tests](generated-client/src/test/kotlin)
+for usage examples.
 
-If you'd like a detailed explanation of what's going on, check out our full tutorial
-[over here](https://docs.stadiamaps.com/tutorials/getting-started-with-geospatial-apis-in-kotlin-openapi/)!
+## Documentation
+
+Official documentation lives at [docs.stadiamaps.com](https://docs.stadiamaps.com/), where you can read
+both long-form prose explanations of the finer details of each endpoint and a
+compact [API reference](https://docs.stadiamaps.com/api-reference/), though the endpoint documentation should be
+accessible in IDEs like IntelliJ as the code is generated from the same specification document.

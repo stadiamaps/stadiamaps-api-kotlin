@@ -3,7 +3,7 @@ plugins {
     application
 }
 
-group = "org.stadiamaps"
+group = "com.stadiamaps"
 version = "1.0-SNAPSHOT"
 
 repositories {

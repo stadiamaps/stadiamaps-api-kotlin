@@ -7,6 +7,7 @@ import org.hidetake.gradle.swagger.generator.GenerateSwaggerCode
 plugins {
     kotlin("jvm")
     id("org.hidetake.swagger.generator") version "2.19.2"
+    `maven-publish`
 }
 
 repositories {
@@ -87,4 +88,25 @@ sourceSets {
     val main by getting
     val stadiamaps by swaggerSources.getting
     main.kotlin.srcDir("${stadiamaps.code.outputDir}/src/main/kotlin")
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/stadiamaps/stadiamaps-api-kotlin")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+
+    publications {
+        create<MavenPublication>("github") {
+            groupId = "com.stadiamaps"
+            artifactId = "api"
+            version = "0.1.0-SNAPSHOT"
+        }
+    }
 }
