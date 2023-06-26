@@ -72,6 +72,25 @@ dependencies {
 }
 ```
 
+Groovy:
+
+```groovy
+dependencies {
+    def retrofitVersion = "2.9.0"
+    
+    // API package
+    implementation 'com.stadiamaps:api:1.0.0'
+
+    // Dependencies
+    implementation 'com.squareup.moshi:moshi-kotlin:1.14.0'
+    implementation 'com.squareup.moshi:moshi-adapters:1.14.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.10.0'
+    implementation "com.squareup.retrofit2:retrofit:${retrofitVersion}"
+    implementation "com.squareup.retrofit2:converter-moshi:${retrofitVersion}"
+    implementation "com.squareup.retrofit2:converter-scalars:${retrofitVersion}"
+}
+```
+
 ## Usage
 
 Next, you'll need a Stadia Maps API key. You can create one for free (no credit card required).
