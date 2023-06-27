@@ -55,6 +55,8 @@ repositories {
 
 Now you're ready to add the package and its dependencies.
 
+Kotlin:
+
 ```kotlin
 dependencies {
     val retrofitVersion = "2.9.0"

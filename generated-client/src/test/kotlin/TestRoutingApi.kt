@@ -11,8 +11,8 @@ import kotlin.test.fail
 internal class TestRoutingApi {
     private val apiKey = System.getenv("STADIA_API_KEY") ?: throw RuntimeException("API Key not set")
     private lateinit var service: RoutingApi
-    private val costingOptions = CostingOptions(auto = AutoCostingOptions(useTolls = 0.7))  // For illustration
-    private val directionsOptions = DirectionsOptions(units = DistanceUnit.mi)
+    private val costingOptions = CostingOptions(auto = AutoCostingOptions(useHighways = 0.3))  // Take the scenic route ;)
+    private val directionsOptions = DirectionsOptions(units = DistanceUnit.mi, language = ValhallaLanguages.enMinusGB)
 
     private val locationA = Coordinate(40.042072, -76.306572)
     private val locationB = Coordinate(39.992115, -76.781559)
