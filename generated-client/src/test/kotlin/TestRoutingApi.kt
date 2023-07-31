@@ -11,7 +11,8 @@ import kotlin.test.fail
 internal class TestRoutingApi {
     private val apiKey = System.getenv("STADIA_API_KEY") ?: throw RuntimeException("API Key not set")
     private lateinit var service: RoutingApi
-    private val costingOptions = CostingOptions(auto = AutoCostingOptions(useHighways = 0.3))  // Take the scenic route ;)
+    private val costingOptions =
+        CostingOptions(auto = AutoCostingOptions(useHighways = 0.3))  // Take the scenic route ;)
     private val directionsOptions = DirectionsOptions(units = DistanceUnit.mi, language = ValhallaLanguages.enMinusGB)
 
     private val locationA = Coordinate(40.042072, -76.306572)
@@ -31,6 +32,32 @@ internal class TestRoutingApi {
             id = "route", locations = listOf(
                 RoutingWaypoint(locationA.lat, locationA.lon), RoutingWaypoint(locationB.lat, locationB.lon)
             ), costing = CostingModel.auto, costingOptions = costingOptions, directionsOptions = directionsOptions
+        )
+        val res = service.route(req).execute()
+        val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
+
+        assertEquals(req.id, body.id)
+        assertEquals(0, body.trip.status)
+        assertEquals(ValhallaLongUnits.miles, body.trip.units)
+        assertEquals(1, body.trip.legs.count())
+    }
+
+    @Test
+    fun testHybridBicycleRoute() {
+        val req = RouteRequest(
+            id = "route",
+            locations = listOf(
+                RoutingWaypoint(locationA.lat, locationA.lon), RoutingWaypoint(locationB.lat, locationB.lon)
+            ),
+            costing = CostingModel.bicycle,
+            costingOptions = CostingOptions(
+                bicycle = BicycleCostingOptions(
+                    bicycleType = BicycleCostingOptions.BicycleType.hybrid,
+                    useRoads = 0.4,
+                    useHills = 0.6
+                )
+            ),
+            directionsOptions = directionsOptions
         )
         val res = service.route(req).execute()
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
