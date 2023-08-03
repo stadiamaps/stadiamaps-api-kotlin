@@ -25,7 +25,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-scalars:$retrofitVersion")
 }
 
-tasks.test {
+tasks.named<Test>("test") {
     useJUnitPlatform()
 }
 
