@@ -48,7 +48,7 @@ internal class TestGeospatialApi {
 
         assertEquals(req.id, body.id)
         assertTrue(body.rangeHeight!!.isNotEmpty(), "Expected at least one height")
-        assertEquals(0, body.rangeHeight!!.first()[0], "Expected the range to be zero for the first element")
+        assertEquals(0f, body.rangeHeight!!.first()[0], "Expected the range to be zero for the first element")
         assertTrue(body.rangeHeight!!.first()[1] > 0, "Expected the height to be greater than zero")
     }
 }

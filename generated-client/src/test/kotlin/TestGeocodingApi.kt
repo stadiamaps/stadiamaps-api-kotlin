@@ -11,7 +11,7 @@ import kotlin.test.fail
 internal class TestGeocodingApi {
     private val apiKey = System.getenv("STADIA_API_KEY") ?: throw RuntimeException("API Key not set")
     private lateinit var service: GeocodingApi
-    private val address = "Põhja pst 27a"
+    private val address = "Põhja pst 27"
 
     @BeforeEach
     fun setUp() {

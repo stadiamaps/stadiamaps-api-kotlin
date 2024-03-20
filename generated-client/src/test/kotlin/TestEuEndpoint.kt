@@ -16,7 +16,7 @@ internal class TestEuEndpoint {
 
         val service = client.createService(GeocodingApi::class.java)
 
-        val res = service.autocomplete("Põhja pst 27a").execute()
+        val res = service.autocomplete("Põhja pst 27").execute()
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals("Estonia", body.features.first().properties!!.country)

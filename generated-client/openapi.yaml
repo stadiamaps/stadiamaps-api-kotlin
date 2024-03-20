@@ -5,7 +5,7 @@ servers:
 info:
   description: >-
     The Stadia Maps Geospatial APIs provide you with the data you need to build awesome applications.
-  version: 5.0.6
+  version: 6.0.0
   title: Stadia Maps Geospatial APIs
   contact:
     name: Stadia Maps Support
@@ -96,6 +96,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/heightResponse'
+        '400':
+          description: Bad request; more details will be included
   /route/v1:
     post:
       tags:
@@ -147,18 +149,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/nearestRoadsResponse'
+        '400':
+          description: Bad request; more details will be included
   /matrix/v1:
     post:
       tags:
         - Routing
       operationId: time-distance-matrix
-      summary: Calculate a time distance matrix for a grid of start and end points.
+      summary: Calculate a time distance matrix for use in an optimizer.
       description: >-
         The time distance matrix API lets you compare travel times between a set of possible start and end points.
         
-        Note that all matrix endpoints have a limit of 1000 elements, regardless of the costing/mode of travel. A matrix
-        request with 3 inputs and 5 outputs has 3 x 5 = 15 elements. This means you could send a 100 x 10 or 20 x 50
-        matrix request (each having 1000 elements), but not 40 x 30 as it has 1200 elements.
+        Note that this endpoint has a limit of 22,500 elements, regardless of the costing/mode of travel.
+        A matrix request with 3 inputs and 5 outputs has 3 x 5 = 15 elements.
+        For example, a matrix request with 3 inputs and 5 outputs has 3 x 5 = 15 elements.
+        This means you could send a 150 x 150 or 30 x 750
+        matrix request (each having 22,500 elements),
+        but not a 500 x 500 matrix (250,000 elements).
       security:
         - ApiKeyAuth: [ ]
       requestBody:
@@ -173,6 +180,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/matrixResponse'
+        '400':
+          description: Bad request; more details will be included
   /isochrone/v1:
     post:
       tags:
@@ -197,6 +206,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/isochroneResponse'
+        '400':
+          description: Bad request; more details will be included
   /optimized_route/v1:
     post:
       tags:
@@ -207,10 +218,6 @@ paths:
         The optimized route API is a mix of the matrix and normal route API. For an optimized route,
         the start and end point are fixed, but the intermediate points will be re-ordered to form an
         optimal route visiting all nodes once.
-        
-        Note that all matrix endpoints have a limit of 1000 elements, regardless of the costing/mode of travel. A matrix
-        request with 3 inputs and 5 outputs has 3 x 5 = 15 elements. This means you could send a 100 x 10 or 20 x 50
-        matrix request (each having 1000 elements), but not 40 x 30 as it has 1200 elements.
       security:
         - ApiKeyAuth: [ ]
       requestBody:
@@ -287,6 +294,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/traceAttributesResponse'
+        '400':
+          description: Bad request; more details will be included
   /geocoding/v1/autocomplete:
     get:
       tags:
@@ -480,11 +489,15 @@ components:
           format: double
           description: The latitude of a point in the shape.
           example: 59.436884
+          minimum: -90
+          maximum: 90
         lon:
           type: number
           format: double
           description: The longitude of a point in the shape.
           example: 24.742595
+          minimum: -180
+          maximum: 180
       required:
         - lat
         - lon
@@ -697,7 +710,7 @@ components:
       description: >-
         Costing models for determining the most optimal route to take. Note that bikeshare and motorcycle are
         still in beta. While Valhalla supports multimodal routing, we do not currently process transit data and
-        have excluded it from the list. See https://valhalla.readthedocs.io/en/latest/api/turn-by-turn/api-reference/#costing-models
+        have excluded it from the list. See https://valhalla.github.io/valhalla/api/turn-by-turn/api-reference/#costing-models
         for detailed descriptions of each model.
     isochroneCostingModel:
       type: string
@@ -710,7 +723,6 @@ components:
       enum:
         - auto
         - bus
-        - hov
         - taxi
         - truck
         - bicycle
@@ -920,6 +932,11 @@ components:
                 If true, indicates the desire to include toll roads which require the driver to pay a
                 toll if the occupant requirement isn't met
               default: false
+            alley_factor:
+              type: number
+              format: double
+              description: A factor that multiplies the cost when alleys are encountered.
+              default: 1
     truckCostingOptions:
       allOf:
         - $ref: '#/components/schemas/autoCostingOptions'
@@ -967,6 +984,13 @@ components:
                 - Cross
                 - Mountain
               default: Hybrid
+              description: >-
+                The type of bicycle:
+                
+                * Road: has narrow tires and is generally lightweight and designed for speed on paved surfaces
+                * Hybrid or City: designed for city riding or casual riding on roads and paths with good surfaces
+                * Cross: similar to a road bike, but has wider tires so it can handle rougher surfaces
+                * Mountain: able to handle most surfaces, but generally heavier and slower on paved surfaces
             cycling_speed:
               type: integer
               description: >-
@@ -1357,16 +1381,16 @@ components:
           description: True if the edge has rough payment.
         tunnel:
           type: boolean
-          description: True if the edge has a tunnel.
+          description: True if the edge is a tunnel.
         bridge:
           type: boolean
-          description: True if the edge has a bridge.
+          description: True if the edge is a bridge.
         roundabout:
           type: boolean
-          description: True if the edge has a roundabout.
+          description: True if the edge is a roundabout.
         internal_intersection:
           type: boolean
-          description: True if the edge has an internal intersection.
+          description: True if the edge is an internal intersection.
         drive_on_right:
           type: boolean
           description: True if the edge is in an area where you must drive on the right side of the road.
@@ -1393,6 +1417,8 @@ components:
             - motorcycle
             - bus
             - tractor_trailer
+            - golf_cart
+            - low_speed_vehicle
         pedestrian_type:
           type: string
           enum:
@@ -1594,6 +1620,12 @@ components:
           description: >-
             The decimal precision (number of digits after the point) of the output.
             When 0, integer values are returned. Valid values are 0, 1, and 2.
+        resample_distance:
+          type: integer
+          minimum: 10
+          description: >-
+            The distance at which the input polyline should be sampled to provide uniform distances between points.
+            If not set, the input shape will be used as-is.
       example:
         {
           "id": "kesklinn",
@@ -1608,34 +1640,35 @@ components:
           "height_precision": 0
         }
     matrixRequest:
-      properties:
-        id:
-          $ref: '#/components/schemas/requestId'
-        sources:
-          type: array
-          items:
-            $ref: '#/components/schemas/coordinate'
-          description: The list of starting locations
-          minItems: 1
-        targets:
-          type: array
-          items:
-            $ref: '#/components/schemas/coordinate'
-          description: The list of ending locations
-          minItems: 1
-        costing:
-          $ref: '#/components/schemas/matrixCostingModel'
-        costing_options:
-          $ref: '#/components/schemas/costingOptions'
-        matrix_locations:
-          type: integer
-          description: >-
-            Only applicable to one-to-many or many-to-one requests. This defaults to all locations.
-            When specified explicitly, this option allows a partial result to be returned. This is basically
-            equivalent to "find the closest/best locations out of the full set." This can have a dramatic
-            improvement for large requests.
-        directions_options:
-          $ref: '#/components/schemas/directionsOptions'
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/requestId'
+            sources:
+              type: array
+              items:
+                $ref: '#/components/schemas/coordinate'
+              description: The list of starting locations
+              minItems: 1
+            targets:
+              type: array
+              items:
+                $ref: '#/components/schemas/coordinate'
+              description: The list of ending locations
+              minItems: 1
+            costing:
+              $ref: '#/components/schemas/matrixCostingModel'
+            costing_options:
+              $ref: '#/components/schemas/costingOptions'
+            matrix_locations:
+              type: integer
+              description: >-
+                Only applicable to one-to-many or many-to-one requests. This defaults to all locations.
+                When specified explicitly, this option allows a partial result to be returned. This is basically
+                equivalent to "find the closest/best locations out of the full set." This can have a dramatic
+                improvement for large requests.
+        - $ref: '#/components/schemas/directionsOptions'
       required:
         - sources
         - targets
@@ -1744,38 +1777,49 @@ components:
           "polygons": true
         }
     routeRequest:
-      properties:
-        id:
-          $ref: '#/components/schemas/requestId'
-        locations:
-          type: array
-          items:
-            $ref: '#/components/schemas/routingWaypoint'
-          minItems: 2
-        costing:
-          $ref: '#/components/schemas/costingModel'
-        costing_options:
-          $ref: '#/components/schemas/costingOptions'
-        avoid_locations:
-          type: array
-          items:
-            $ref: '#/components/schemas/routingWaypoint'
-        avoid_polygons:
-          type: array
-          items:
-            type: array
-            items:
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/requestId'
+            locations:
               type: array
               items:
-                type: number
-                format: double
-          description: >-
-            One or multiple exterior rings of polygons in the form of nested JSON arrays.
-            Roads intersecting these rings will be avoided during path finding. Open rings will be
-            closed automatically.
-          example: [[[30, 10], [40, 40], [20, 40], [10, 20], [30, 10]]]
-        directions_options:
-          $ref: '#/components/schemas/directionsOptions'
+                $ref: '#/components/schemas/routingWaypoint'
+              minItems: 2
+            costing:
+              $ref: '#/components/schemas/costingModel'
+            costing_options:
+              $ref: '#/components/schemas/costingOptions'
+            exclude_locations:
+              type: array
+              items:
+                $ref: '#/components/schemas/routingWaypoint'
+              description: >-
+                This has the same format as the locations list.
+                Locations are mapped to the closed road(s), and these road(s)
+                are excluded from the route path computation.
+            exclude_polygons:
+              type: array
+              items:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: number
+                    format: double
+              description: >-
+                One or multiple exterior rings of polygons in the form of nested JSON arrays.
+                Roads intersecting these rings will be avoided during path finding. Open rings will be
+                closed automatically.
+                If you only need to avoid a few specific roads, it's much more efficient to use `exclude_locations`.
+              example: [[[30, 10], [40, 40], [20, 40], [10, 20], [30, 10]]]
+            alternates:
+              type: integer
+              description: >-
+                How many alternate routes are desired. Note that fewer or no alternates may be returned.
+                Alternates are not yet supported on routes with more than 2 locations or on time-dependent routes.
+        - $ref: '#/components/schemas/directionsOptions'
       required:
         - locations
         - costing
@@ -1800,28 +1844,27 @@ components:
               "use_highways": 0
             }
           },
-          "directions_options": {
-            "units": "miles"
-          }
+          "units": "miles"
         }
     optimizedRouteRequest:
-      properties:
-        id:
-          $ref: '#/components/schemas/requestId'
-        locations:
-          type: array
-          items:
-            $ref: '#/components/schemas/coordinate'
-          description: >-
-            The list of locations. The first and last are assumed to be the start and end points, and
-            all intermediate points are locations that you want to visit along the way.
-          minItems: 3
-        costing:
-          $ref: '#/components/schemas/matrixCostingModel'
-        costing_options:
-          $ref: '#/components/schemas/costingOptions'
-        directions_options:
-          $ref: '#/components/schemas/directionsOptions'
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/requestId'
+            locations:
+              type: array
+              items:
+                $ref: '#/components/schemas/coordinate'
+              description: >-
+                The list of locations. The first and last are assumed to be the start and end points, and
+                all intermediate points are locations that you want to visit along the way.
+              minItems: 3
+            costing:
+              $ref: '#/components/schemas/matrixCostingModel'
+            costing_options:
+              $ref: '#/components/schemas/costingOptions'
+        - $ref: '#/components/schemas/directionsOptions'
       required:
         - locations
         - costing
@@ -1850,26 +1893,25 @@ components:
             }
           ],
           "costing": "auto",
-          "directions_options": {
-            "units": "miles"
-          }
+          "units": "miles"
         }
     nearestRoadsRequest:
-      properties:
-        locations:
-          type: array
-          items:
-            $ref: '#/components/schemas/coordinate'
-          minItems: 1
-        costing:
-          $ref: '#/components/schemas/costingModel'
-        costing_options:
-          $ref: '#/components/schemas/costingOptions'
-        verbose:
-          type: boolean
-          default: false
-        directions_options:
-          $ref: '#/components/schemas/directionsOptions'
+      allOf:
+        - type: object
+          properties:
+            locations:
+              type: array
+              items:
+                $ref: '#/components/schemas/coordinate'
+              minItems: 1
+            costing:
+              $ref: '#/components/schemas/costingModel'
+            costing_options:
+              $ref: '#/components/schemas/costingOptions'
+            verbose:
+              type: boolean
+              default: false
+        - $ref: '#/components/schemas/directionsOptions'
       required:
         - locations
       example:
@@ -1883,43 +1925,44 @@ components:
           "verbose": true
         }
     baseTraceRequest:
-      properties:
-        id:
-          $ref: '#/components/schemas/requestId'
-        shape:
-          type: array
-          items:
-            $ref: '#/components/schemas/mapMatchWaypoint'
-          description: >-
-            REQUIRED if `encoded_polyline` is not present. Note that `break` type locations are only supported
-            when `shape_match` is set to `map_match`.
-        encoded_polyline:
-          type: string
-          description: >-
-            REQUIRED if `shape` is not present. An encoded polyline
-            (https://developers.google.com/maps/documentation/utilities/polylinealgorithm). Note that the polyline
-            must be encoded with 6 digits of precision rather than the usual 5.
-        costing:
-          $ref: '#/components/schemas/mapMatchCostingModel'
-        costing_options:
-          $ref: '#/components/schemas/costingOptions'
-        shape_match:
-          type: string
-          enum:
-            - edge_walk
-            - map_snap
-            - walk_or_snap
-          description: >-
-            Three snapping modes provide some control over how the map matching occurs.
-            `edge_walk` is fast, but requires extremely precise data that matches the route graph
-            almost perfectly. `map_snap` can handle significantly noisier data, but is very expensive.
-            `walk_or_snap`, the default, tries to use edge walking first and falls back to map matching
-            if edge walking fails.
-
-            In general, you should not need to change this parameter unless you want to trace a multi-leg
-            route with multiple `break` locations in the `shape`.
-        directions_options:
-          $ref: '#/components/schemas/directionsOptions'
+      allOf:
+        - type: object
+          properties:
+            id:
+              $ref: '#/components/schemas/requestId'
+            shape:
+              type: array
+              items:
+                $ref: '#/components/schemas/mapMatchWaypoint'
+              description: >-
+                REQUIRED if `encoded_polyline` is not present. Note that `break` type locations are only supported
+                when `shape_match` is set to `map_match`.
+            encoded_polyline:
+              type: string
+              description: >-
+                REQUIRED if `shape` is not present. An encoded polyline
+                (https://developers.google.com/maps/documentation/utilities/polylinealgorithm). Note that the polyline
+                must be encoded with 6 digits of precision rather than the usual 5.
+            costing:
+              $ref: '#/components/schemas/mapMatchCostingModel'
+            costing_options:
+              $ref: '#/components/schemas/costingOptions'
+            shape_match:
+              type: string
+              enum:
+                - edge_walk
+                - map_snap
+                - walk_or_snap
+              description: >-
+                Three snapping modes provide some control over how the map matching occurs.
+                `edge_walk` is fast, but requires extremely precise data that matches the route graph
+                almost perfectly. `map_snap` can handle significantly noisier data, but is very expensive.
+                `walk_or_snap`, the default, tries to use edge walking first and falls back to map matching
+                if edge walking fails.
+    
+                In general, you should not need to change this parameter unless you want to trace a multi-leg
+                route with multiple `break` locations in the `shape`.
+        - $ref: '#/components/schemas/directionsOptions'
       required:
         - costing
     mapMatchRequest:
@@ -1956,9 +1999,7 @@ components:
           "encoded_polyline": "_grbgAh~{nhF?lBAzBFvBHxBEtBKdB?fB@dBZdBb@hBh@jBb@x@\\|@x@pB\\x@v@hBl@nBPbCXtBn@|@z@ZbAEbAa@~@q@z@QhA]pAUpAVhAPlAWtASpAAdA[dASdAQhAIlARjANnAZhAf@n@`A?lB^nCRbA\\xB`@vBf@tBTbCFbARzBZvBThBRnBNrBP`CHbCF`CNdCb@vBX`ARlAJfADhA@dAFdAP`AR`Ah@hBd@bBl@rBV|B?vB]tBCvBBhAF`CFnBXtAVxAVpAVtAb@|AZ`Bd@~BJfA@fAHdADhADhABjAGzAInAAjAB|BNbCR|BTjBZtB`@lBh@lB\\|Bl@rBXtBN`Al@g@t@?nAA~AKvACvAAlAMdAU`Ac@hAShAI`AJ`AIdAi@bAu@|@k@p@]p@a@bAc@z@g@~@Ot@Bz@f@X`BFtBXdCLbAf@zBh@fBb@xAb@nATjAKjAW`BI|AEpAHjAPdAAfAGdAFjAv@p@XlAVnA?~A?jAInAPtAVxAXnAf@tBDpBJpBXhBJfBDpAZ|Ax@pAz@h@~@lA|@bAnAd@hAj@tAR~AKxAc@xAShA]hAIdAAjA]~A[v@BhB?dBSv@Ct@CvAI~@Oz@Pv@dAz@lAj@~A^`B^|AXvAVpAXdBh@~Ap@fCh@hB\\zBN`Aj@xBFdA@jALbAPbAJdAHdAJbAHbAHfAJhALbA\\lBTvBAdC@bC@jCKjASbC?`CM`CDpB\\xAj@tB\\fA\\bAVfAJdAJbAXz@L|BO`AOdCDdA@~B\\z@l@v@l@v@l@r@j@t@b@x@b@r@z@jBVfCJdAJdANbCPfCF|BRhBS~BS`AYbAe@~BQdA",
           "shape_match": "map_snap",
           "costing": "pedestrian",
-          "directions_options": {
-            "units": "miles"
-          },
+          "units": "miles",
           "linear_references": true
         }
     traceAttributesRequest:
@@ -1977,9 +2018,7 @@ components:
           "encoded_polyline": "_grbgAh~{nhF?lBAzBFvBHxBEtBKdB?fB@dBZdBb@hBh@jBb@x@\\|@x@pB\\x@v@hBl@nBPbCXtBn@|@z@ZbAEbAa@~@q@z@QhA]pAUpAVhAPlAWtASpAAdA[dASdAQhAIlARjANnAZhAf@n@`A?lB^nCRbA\\xB`@vBf@tBTbCFbARzBZvBThBRnBNrBP`CHbCF`CNdCb@vBX`ARlAJfADhA@dAFdAP`AR`Ah@hBd@bBl@rBV|B?vB]tBCvBBhAF`CFnBXtAVxAVpAVtAb@|AZ`Bd@~BJfA@fAHdADhADhABjAGzAInAAjAB|BNbCR|BTjBZtB`@lBh@lB\\|Bl@rBXtBN`Al@g@t@?nAA~AKvACvAAlAMdAU`Ac@hAShAI`AJ`AIdAi@bAu@|@k@p@]p@a@bAc@z@g@~@Ot@Bz@f@X`BFtBXdCLbAf@zBh@fBb@xAb@nATjAKjAW`BI|AEpAHjAPdAAfAGdAFjAv@p@XlAVnA?~A?jAInAPtAVxAXnAf@tBDpBJpBXhBJfBDpAZ|Ax@pAz@h@~@lA|@bAnAd@hAj@tAR~AKxAc@xAShA]hAIdAAjA]~A[v@BhB?dBSv@Ct@CvAI~@Oz@Pv@dAz@lAj@~A^`B^|AXvAVpAXdBh@~Ap@fCh@hB\\zBN`Aj@xBFdA@jALbAPbAJdAHdAJbAHbAHfAJhALbA\\lBTvBAdC@bC@jCKjASbC?`CM`CDpB\\xAj@tB\\fA\\bAVfAJdAJbAXz@L|BO`AOdCDdA@~B\\z@l@v@l@v@l@r@j@t@b@x@b@r@z@jBVfCJdAJdANbCPfCF|BRhBS~BS`AYbAe@~BQdA",
           "shape_match": "map_snap",
           "costing": "pedestrian",
-          "directions_options": {
-            "units": "miles"
-          }
+          "units": "miles"
         }
     tzResponse:
       type: object
@@ -2375,7 +2414,6 @@ components:
             - bus
             - tractor_trailer
             - motor_scooter
-            - golf_cart
             - foot
             - wheelchair
             - segway
@@ -2390,6 +2428,8 @@ components:
             - cable_car
             - gondola
             - funicular
+            - golf_cart
+            - low_speed_vehicle
         bss_maneuver_type:
           type: string
           description: Describes a bike share action when using bikeshare routing.
@@ -2426,42 +2466,51 @@ components:
         - maneuvers
         - shape
         - summary
+    routeTrip:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: The response status code
+        status_message:
+          type: string
+          description: The response status message
+        units:
+          $ref: '#/components/schemas/valhallaLongUnits'
+        language:
+          $ref: '#/components/schemas/valhallaLanguages'
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/routingResponseWaypoint'
+        legs:
+          type: array
+          items:
+            $ref: '#/components/schemas/routeLeg'
+        summary:
+          $ref: '#/components/schemas/routeSummary'
+      required:
+        - status
+        - status_message
+        - units
+        - language
+        - locations
+        - legs
+        - summary
     routeResponse:
       type: object
       properties:
         id:
           $ref: '#/components/schemas/requestId'
         trip:
-          type: object
-          properties:
-            status:
-              type: integer
-              description: The response status code
-            status_message:
-              type: string
-              description: The response status message
-            units:
-              $ref: '#/components/schemas/valhallaLongUnits'
-            language:
-              $ref: '#/components/schemas/valhallaLanguages'
-            locations:
-              type: array
-              items:
-                $ref: '#/components/schemas/routingResponseWaypoint'
-            legs:
-              type: array
-              items:
-                $ref: '#/components/schemas/routeLeg'
-            summary:
-              $ref: '#/components/schemas/routeSummary'
-          required:
-            - status
-            - status_message
-            - units
-            - language
-            - locations
-            - legs
-            - summary
+          $ref: '#/components/schemas/routeTrip'
+        alternates:
+          type: array
+          items:
+            type: object
+            properties:
+              trip:
+                $ref: '#/components/schemas/routeTrip'
       required:
         - trip
       example:
@@ -3191,17 +3240,13 @@ components:
         sources:
           type: array
           items:
-            type: array
-            items:
-              $ref: '#/components/schemas/coordinate'
+            $ref: '#/components/schemas/coordinate'
           description: The list of starting locations
           minItems: 1
         targets:
           type: array
           items:
-            type: array
-            items:
-              $ref: '#/components/schemas/coordinate'
+            $ref: '#/components/schemas/coordinate'
           description: The list of ending locations
           minItems: 1
         sources_to_targets:
@@ -3475,7 +3520,8 @@ components:
             The list of heights for each point, in meters. Present only if `range` is `false`.
             Null values indicate missing data.
           items:
-            type: integer
+            type: number
+            format: float
         range_height:
           type: array
           description: >-
@@ -3490,9 +3536,10 @@ components:
           items:
             type: array
             items:
-              type: integer
-            minLength: 2
-            maxLength: 2
+              type: number
+              format: float
+            minItems: 2
+            maxItems: 2
       example:
         {
           "id": "kesklinn",
@@ -3668,6 +3715,9 @@ components:
       properties:
         edge_id:
           $ref: '#/components/schemas/nodeId'
+        way_id:
+          type: integer
+          description: The OSM way ID associated with this edge (absent in verbose response; see the edge info).
         correlated_lat:
           type: number
           format: double
@@ -3714,6 +3764,11 @@ components:
           type: array
           items:
             type: string
+      required:
+        - correlated_lat
+        - correlated_lon
+        - side_of_street
+        - percent_along
     locateEdgeInfo:
       type: object
       properties:
@@ -3736,6 +3791,10 @@ components:
           $ref: '#/components/schemas/bikeNetwork'
         way_id:
           type: integer
+          description: The OSM way ID associated with this edge.
+      required:
+        - way_id
+        - shape
     locateDetailedEdge:
       type: object
       properties:
@@ -3827,10 +3886,10 @@ components:
           $ref: '#/components/schemas/highwayClassification'
         toll:
           type: boolean
-          description: Is the edge part of a toll road?
+          description: Is the edge a toll road?
         tunnel:
           type: boolean
-          description: Is the edge part of a tunnel?
+          description: Is the edge a tunnel?
     bikeNetwork:
       type: object
       properties:
@@ -4592,6 +4651,8 @@ components:
       schema:
         type: number
         format: double
+        minimum: -90
+        maximum: 90
       example: 48.848268
     reverseLon:
       name: point.lon
@@ -4602,6 +4663,8 @@ components:
       schema:
         type: number
         format: double
+        minimum: -180
+        maximum: 180
       example: 2.294471
     placeIDs:
       name: ids
