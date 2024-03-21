@@ -5,7 +5,7 @@ servers:
 info:
   description: >-
     The Stadia Maps Geospatial APIs provide you with the data you need to build awesome applications.
-  version: 6.0.0
+  version: 6.1.0
   title: Stadia Maps Geospatial APIs
   contact:
     name: Stadia Maps Support
@@ -845,6 +845,22 @@ components:
           $ref: '#/components/schemas/useLivingStreetsCostingOption'
         use_ferry:
           $ref: '#/components/schemas/useFerryCostingOption'
+        ignore_restrictions:
+          type: boolean
+          description: >-
+            If set to true, ignores any restrictions (eg: turn and conditional restrictions).
+            Useful for matching GPS traces to the road network regardless of restrictions.
+        ignore_non_vehicular_restrictions:
+          type: boolean
+          description: >-
+            If set to true, ignores most restrictions (eg: turn and conditional restrictions),
+            but still respects restrictions that impact vehicle safety such as weight and size.
+        ignore_oneways:
+          type: boolean
+          description: >-
+            If set to true, ignores directional restrictions on roads.
+            Useful for matching GPS traces to the road network regardless of restrictions.
+
     autoCostingOptions:
       allOf:
         - $ref: '#/components/schemas/baseCostingOptions'
