@@ -80,7 +80,7 @@ internal class TestRoutingApi {
             costing = CostingModel.bicycle,
             costingOptions = CostingOptions(
                 bicycle = BicycleCostingOptions(
-                    bicycleType = BicycleCostingOptions.BicycleType.hybrid,
+                    bicycleType = BicycleCostingOptions.BicycleType.Hybrid,
                     useRoads = 0.4,
                     useHills = 0.6
                 )
@@ -159,7 +159,7 @@ internal class TestRoutingApi {
 
         assertEquals(req.id, body.id)
         assertTrue(body.features.isNotEmpty())
-        assertEquals(IsochroneResponse.Type.featureCollection, body.type)
+        assertEquals(IsochroneResponse.Type.FeatureCollection, body.type)
     }
 
     @Test

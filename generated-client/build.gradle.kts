@@ -17,7 +17,7 @@ repositories {
 dependencies {
     val retrofitVersion: String by project
 
-    swaggerCodegen("org.openapitools:openapi-generator-cli:6.6.0")
+    swaggerCodegen("org.openapitools:openapi-generator-cli:7.5.0")
 
     // Dependencies of the generated code. Check out `build.gradle` in your build folder later if you're curious.
     val moshiVersion = "1.15.1"

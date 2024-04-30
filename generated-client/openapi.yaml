@@ -3319,13 +3319,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/coordinate'
-          description: The list of starting locations
+          description: >-
+            The list of starting locations determined by snapping to the nearest appropriate point on the road network for the costing model.
+            All locations appear in the same order as the input.
           minItems: 1
         targets:
           type: array
           items:
             $ref: '#/components/schemas/coordinate'
-          description: The list of ending locations
+          description: >-
+            The list of ending locations determined by snapping to the nearest appropriate point on the road network for the costing model.
+            All locations appear in the same order as the input.
           minItems: 1
         sources_to_targets:
           type: array
