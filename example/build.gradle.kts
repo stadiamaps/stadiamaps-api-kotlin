@@ -17,7 +17,9 @@ dependencies {
 
     implementation(project(":generated-client"))
 
-    implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
+    val moshiVersion = "1.15.1"
+    implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
+    implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
     implementation("com.squareup.moshi:moshi-adapters:1.14.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")

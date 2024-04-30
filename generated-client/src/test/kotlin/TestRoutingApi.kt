@@ -120,9 +120,9 @@ internal class TestRoutingApi {
     fun testTimeDistanceMatrix() {
         val req = MatrixRequest(
             id = "matrix",
-            sources = listOf(locationA),
-            targets = listOf(locationB, locationC),
-            costing = MatrixCostingModel.auto,
+            sources = listOf(MatrixWaypoint(58.891957, 22.726262), MatrixWaypoint(59.1558, 23.762758)),
+            targets = listOf(MatrixWaypoint(59.176153, 23.846605), MatrixWaypoint(59.562853, 23.096114)),
+            costing = MatrixCostingModel.bicycle,
             costingOptions = costingOptions,
         )
         val res = service.timeDistanceMatrix(req).execute()
@@ -132,7 +132,7 @@ internal class TestRoutingApi {
         assertEquals(req.sources.count(), body.sources.count())
         assertEquals(req.targets.count(), body.targets.count())
         assertEquals(ValhallaLongUnits.kilometers, body.units)
-        assertTrue(body.sourcesToTargets.isNotEmpty())
+        assertTrue(body.sourcesToTargets.first().isNotEmpty())
     }
 
     @Test

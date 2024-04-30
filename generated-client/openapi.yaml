@@ -5,7 +5,7 @@ servers:
 info:
   description: >-
     The Stadia Maps Geospatial APIs provide you with the data you need to build awesome applications.
-  version: 6.1.0
+  version: 6.3.0
   title: Stadia Maps Geospatial APIs
   contact:
     name: Stadia Maps Support
@@ -181,7 +181,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/matrixResponse'
         '400':
-          description: Bad request; more details will be included
+          description: >-
+            Bad request; more details will be included.
+            NOTE: failure to find suitable edges near a location will result in a 400.
   /isochrone/v1:
     post:
       tags:
@@ -683,6 +685,17 @@ components:
                 The timestamp of the waypoint, in seconds. This can inform the map matching algorithm about when the
                 point was measured. A UNIX timestamp, or any increasing integer sequence measuring seconds from some
                 reference point can be used.
+    matrixWaypoint:
+      allOf:
+        - $ref: '#/components/schemas/coordinate'
+        - type: object
+          properties:
+            search_cutoff:
+              type: integer
+              description: >-
+                The cutoff (in meters) at which we will assume the input is too far away from civilisation to be worth correlating to the nearest graph elements.
+                The default is 35 km.
+              default: break
     roadClass:
       type: string
       enum:
@@ -707,11 +720,14 @@ components:
         - motor_scooter
         - motorcycle
         - pedestrian
+        - low_speed_vehicle
       description: >-
-        Costing models for determining the most optimal route to take. Note that bikeshare and motorcycle are
-        still in beta. While Valhalla supports multimodal routing, we do not currently process transit data and
-        have excluded it from the list. See https://valhalla.github.io/valhalla/api/turn-by-turn/api-reference/#costing-models
-        for detailed descriptions of each model.
+        A model which influences the routing based on the type of travel.
+        The costing model affects parameters ranging from which roads are legally accessible
+        to preferences based on comfort or speed.
+        
+        See https://valhalla.github.io/valhalla/api/turn-by-turn/api-reference/#costing-models
+        for in-depth descriptions of each costing model.
     isochroneCostingModel:
       type: string
       enum:
@@ -730,6 +746,7 @@ components:
         - motor_scooter
         - motorcycle
         - pedestrian
+        - low_speed_vehicle
     mapMatchCostingModel:
       type: string
       enum:
@@ -756,6 +773,8 @@ components:
           $ref: '#/components/schemas/motorcycleCostingOptions'
         pedestrian:
           $ref: '#/components/schemas/pedestrianCostingOptions'
+        low_speed_vehicle:
+          $ref: '#/components/schemas/lowSpeedVehicleCostingOptions'
     useFerryCostingOption:
       type: number
       format: double
@@ -1173,6 +1192,41 @@ components:
           type: integer
           description: A penalty (in seconds) to rent a bicycle in `bikeshare` mode.
           default: 0
+    lowSpeedVehicleCostingOptions:
+      allOf:
+        - $ref: '#/components/schemas/baseCostingOptions'
+        - type: object
+          properties:
+            vehicle_type:
+              type: string
+              enum:
+                - low_speed_vehicle
+                - golf_cart
+              default: low_speed_vehicle
+              description: >-
+                The type of vehicle:
+                
+                * low_speed_vehicle (BETA): a low-speed vehicle which falls under a different regulatory and licensing regime than automobiles (ex: LSV in the US and Canada, Quadricycles in the EU, etc.)
+                * golf_cart: a street legal golf cart that is under a similar regulator regime as the generic LSV laws, but may need to follow special paths when available or abide by restrictions specific to golf carts.
+            top_speed:
+              type: integer
+              description: >-
+                The top speed (in kph) that the vehicle is capable of travelling.
+                
+                This impacts travel time calculations as well as which roads are preferred.
+                A very low speed vehicle will tend to prefer lower speed roads even in the presence of other legal routes.
+              default: 35
+              minimum: 20
+              maximum: 60
+            max_allowed_speed_limit:
+              type: integer
+              description: >-
+                The maximum speed limit for highways on which it is legal for the vehicle to travel.
+                Defaults to 57 (kph; around 35 mph). Acceptable values range from 20 to 80.
+                Highways with *tagged* speed limits higher than this value will not be routed over (some caveats apply; this feature is still BETA).
+              default: 57
+              minimum: 20
+              maximum: 80
     directionsOptions:
       type: object
       properties:
@@ -1202,14 +1256,22 @@ components:
         distance:
           type: number
           format: double
+          nullable: true
           description: >-
             The distance (in `units`) between the location in `sources` at `from_index`
             and the location in `targets` at `to_index`.
+            
+            This value may be 0 in the case that the source and destination are the same,
+            and `null` if no route was found between the locations.
         time:
           type: integer
+          nullable: true
           description: >-
             The travel time (in seconds) between the location in `sources` at `from_index`
             and the location in `targets` at `to_index`.
+            
+            This value may be 0 in the case that the source and destination are the same,
+            and `null` if no route was found between the locations.
         from_index:
           type: integer
           description: The index of the start location in the `sources` array.
@@ -1664,13 +1726,13 @@ components:
             sources:
               type: array
               items:
-                $ref: '#/components/schemas/coordinate'
+                $ref: '#/components/schemas/matrixWaypoint'
               description: The list of starting locations
               minItems: 1
             targets:
               type: array
               items:
-                $ref: '#/components/schemas/coordinate'
+                $ref: '#/components/schemas/matrixWaypoint'
               description: The list of ending locations
               minItems: 1
             costing:

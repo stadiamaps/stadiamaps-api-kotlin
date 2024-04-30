@@ -20,8 +20,9 @@ dependencies {
     swaggerCodegen("org.openapitools:openapi-generator-cli:6.6.0")
 
     // Dependencies of the generated code. Check out `build.gradle` in your build folder later if you're curious.
-    implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
-    implementation("com.squareup.moshi:moshi-adapters:1.14.0")
+    val moshiVersion = "1.15.1"
+    implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
+    implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
     implementation("com.squareup.retrofit2:converter-moshi:$retrofitVersion")
