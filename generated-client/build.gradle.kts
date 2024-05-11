@@ -110,7 +110,7 @@ publishing {
 
             groupId = "com.stadiamaps"
             artifactId = "api"
-            version = "3.0.0"
+            version = "3.1.0"
         }
     }
 }

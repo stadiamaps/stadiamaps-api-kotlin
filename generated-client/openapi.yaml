@@ -5,7 +5,7 @@ servers:
 info:
   description: >-
     The Stadia Maps Geospatial APIs provide you with the data you need to build awesome applications.
-  version: 6.3.0
+  version: 6.4.0
   title: Stadia Maps Geospatial APIs
   contact:
     name: Stadia Maps Support
@@ -160,12 +160,7 @@ paths:
       description: >-
         The time distance matrix API lets you compare travel times between a set of possible start and end points.
         
-        Note that this endpoint has a limit of 22,500 elements, regardless of the costing/mode of travel.
-        A matrix request with 3 inputs and 5 outputs has 3 x 5 = 15 elements.
-        For example, a matrix request with 3 inputs and 5 outputs has 3 x 5 = 15 elements.
-        This means you could send a 150 x 150 or 30 x 750
-        matrix request (each having 22,500 elements),
-        but not a 500 x 500 matrix (250,000 elements).
+        See https://docs.stadiamaps.com/limits/ for documentation of our latest limits.
       security:
         - ApiKeyAuth: [ ]
       requestBody:
@@ -1897,6 +1892,24 @@ components:
               description: >-
                 How many alternate routes are desired. Note that fewer or no alternates may be returned.
                 Alternates are not yet supported on routes with more than 2 locations or on time-dependent routes.
+            elevation_interval:
+              type: number
+              format: float
+              description: >-
+                If greater than zero, attempts to include elevation along the route at regular intervals.
+                The "native" internal resolution is 30m, so we recommend you use this when possible.
+                This number is interpreted as either meters or feet depending on the unit parameter.
+
+                Elevation for route sections containing a bridge or tunnel is interpolated linearly.
+                This doesn't always match the true elevation of the bridge/tunnel,
+                but it prevents sharp artifacts from the surrounding terrain.
+                This functionality is unique to the route endpoint and is not available via the elevation API.
+              default: 0.0
+            roundabout_exits:
+              type: boolean
+              description: >-
+                Determines whether the output should include roundabout exit instructions.
+              default: true
         - $ref: '#/components/schemas/directionsOptions'
       required:
         - locations
@@ -2540,6 +2553,20 @@ components:
             6 digits of decimal precision.
         summary:
           $ref: '#/components/schemas/routeSummary'
+        elevation_interval:
+          type: number
+          format: float
+          description: >-
+            The sampling distance between elevation values along the route.
+            This echoes the request parameter having the same name.
+        elevation:
+          type: array
+          items:
+            type: number
+            format: float
+          description: >-
+            An array of elevation values sampled every `elevation_interval`.
+            Units are either metric or imperial depending on the value of `units`.
       required:
         - maneuvers
         - shape

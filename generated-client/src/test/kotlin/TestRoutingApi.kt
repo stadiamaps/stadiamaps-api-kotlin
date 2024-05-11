@@ -71,6 +71,29 @@ internal class TestRoutingApi {
     }
 
     @Test
+    fun testRouteWithElevation() {
+        val req = RouteRequest(
+            id = "route",
+            locations = listOf(
+                RoutingWaypoint(locationA.lat, locationA.lon), RoutingWaypoint(locationB.lat, locationB.lon)
+            ),
+            costing = CostingModel.auto,
+            costingOptions = costingOptions,
+            units = DistanceUnit.mi,
+            language = ValhallaLanguages.enMinusGB,
+            elevationInterval = 30f,
+        )
+        val res = service.route(req).execute()
+        val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
+
+        assertEquals(req.id, body.id)
+        assertEquals(0, body.trip.status)
+        assertEquals(ValhallaLongUnits.miles, body.trip.units)
+        assertEquals(1, body.trip.legs.count())
+        assert((body.trip.legs.first().elevation?.count() ?: 0) > 1)
+    }
+
+    @Test
     fun testHybridBicycleRoute() {
         val req = RouteRequest(
             id = "route",
