@@ -11,6 +11,13 @@ val seoul = Coordinate(37.56, 126.99)
 val tll = RoutingWaypoint(59.416411, 24.798778)
 val kultuurikatel = RoutingWaypoint(59.44436, 24.75071)
 
+// Note: All code in this example is blocking for demonstration purposes.
+// If you're using Kotlin with coroutines,
+// you can also use these asynchronously within suspend functions.
+// Synchronous code can enqueue a callback to avoid blocking
+// (you'll definitely want to do one of these instead when on the main thread of an app).
+// See the docs for details: https://square.github.io/retrofit/2.x/retrofit/retrofit2/Call.html
+
 fun testGeospatialApis(client: ApiClient) {
     val geoService = client.createService(GeospatialApi::class.java)
 

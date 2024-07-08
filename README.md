@@ -99,8 +99,7 @@ Next, you'll need a Stadia Maps API key. You can create one for free (no credit 
 Get one at https://client.stadiamaps.com/. After signing up, create a property and you'll get
 the flow.
 
-See the [example app](example/src/main/kotlin/Main.kt) or [integration tests](generated-client/src/test/kotlin)
-for usage examples.
+See the [example app](example/src/main/kotlin/Main.kt) for usage examples.
 
 ## Documentation
 
