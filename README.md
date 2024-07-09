@@ -95,15 +95,15 @@ dependencies {
 
 ## Usage
 
-Next, you'll need a Stadia Maps API key. You can create one for free (no credit card required).
-Get one at https://client.stadiamaps.com/. After signing up, create a property and you'll get
-the flow.
+Next, you'll need a Stadia Maps API key.
+You can create an API key for free [here](https://client.stadiamaps.com/signup/?utm_source=github&utm_campaign=sdk_readme&utm_content=kotlin_readme)
+(no credit card required).
 
 See the [example app](example/src/main/kotlin/Main.kt) for usage examples.
 
 ## Documentation
 
-Official documentation lives at [docs.stadiamaps.com](https://docs.stadiamaps.com/), where you can read
-both long-form prose explanations of the finer details of each endpoint and a
-compact [API reference](https://docs.stadiamaps.com/api-reference/), though the endpoint documentation should be
-accessible in IDEs like IntelliJ as the code is generated from the same specification document.
+Official documentation lives at [docs.stadiamaps.com](https://docs.stadiamaps.com/?utm_source=github&utm_campaign=sdk_readme&utm_content=kotlin_readme),
+where we have both long-form prose explanations of each endpoint and an interactive [API reference](https://docs.stadiamaps.com/api-reference/?utm_source=github&utm_campaign=sdk_readme&utm_content=kotlin_readme).
+If you're using an IDE like IntelliJ though,
+the auto-complete and built-in documentation functionality is even easier to use than the online generated reference.
