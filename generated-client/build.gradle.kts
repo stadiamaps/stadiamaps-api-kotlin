@@ -35,7 +35,7 @@ kotlin {
     jvmToolchain(17)
 }
 
-tasks.test {
+tasks.named<Test>("test") {
     useJUnitPlatform()
 }
 
@@ -56,12 +56,12 @@ open class DownloadResource : DefaultTask() {
     }
 }
 
-tasks.register("downloadOpenAPISpec", DownloadResource::class.java) {
+tasks.register<DownloadResource>("downloadOpenAPISpec") {
     sourceUrl = "https://api.stadiamaps.com/openapi.yaml"
     target = File("openapi.yaml")
 }
 
-tasks.named("generateSwaggerCode").configure {
+tasks.named<GenerateSwaggerCode>("generateSwaggerCode").configure {
     dependsOn("downloadOpenAPISpec")
 }
 
