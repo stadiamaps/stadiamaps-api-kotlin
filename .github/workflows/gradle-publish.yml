@@ -45,6 +45,6 @@ jobs:
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
     - name: Publish to Maven Central
-      run: ./gradlew publish
+      run: ./gradlew publishToMavenCentralPortal
       env:
         MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
