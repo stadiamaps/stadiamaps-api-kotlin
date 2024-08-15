@@ -8,9 +8,12 @@ plugins {
     kotlin("jvm")
     id("org.hidetake.swagger.generator") version "2.19.2"
     `maven-publish`
-    id("org.jreleaser") version "1.13.1"
+    signing
     id("org.jetbrains.dokka") version "1.9.20"
+    id("tech.yanand.maven-central-publish") version "1.1.1"
 }
+
+val stagingDir = layout.buildDirectory.dir("staging-deploy").get()
 
 repositories {
     mavenCentral()
@@ -122,43 +125,25 @@ sourceSets {
     main.kotlin.srcDir("${stadiamaps.code.outputDir}/src/main/kotlin")
 }
 
-jreleaser {
-    signing {
-        setActive("ALWAYS")
-        armored = true
-    }
-    deploy {
-        maven {
-            mavenCentral {
-                create("sonatype") {
-                    setActive("ALWAYS")
-                    url = "https://central.sonatype.com/api/v1/publisher"
-                    stagingRepository("target/staging-deploy")
-                }
-            }
-        }
-    }
-}
-
 publishing {
     repositories {
         maven {
-            url = layout.buildDirectory.dir("staging-deploy").get().asFile.toURI()
+            url = stagingDir.asFile.toURI()
         }
     }
 
     publications {
-        register<MavenPublication>("publication") {
+        create<MavenPublication>("publication") {
+            groupId = "com.stadiamaps"
+            artifactId = "api"
+            version = "3.2.0"
+
             from(components["java"])
 
             // Add the Dokka Javadoc jar as an artifact
             artifact(tasks["dokkaJavadocJar"]) {
                 classifier = "javadoc"
             }
-
-            groupId = "com.stadiamaps"
-            artifactId = "api"
-            version = "3.1.0"
 
 
             pom {
@@ -188,4 +173,18 @@ publishing {
 
         }
     }
+}
+
+signing {
+    val signingKey = System.getenv("GPG_PRIVATE_KEY")
+    val signingKeyPassphrase = System.getenv("MAVEN_GPG_PASSPHRASE")
+    useInMemoryPgpKeys(signingKey, signingKeyPassphrase)
+
+    sign(publishing.publications["publication"])
+}
+
+mavenCentral {
+    repoDir = stagingDir
+    authToken = System.getenv("MAVEN_CENTRAL_TOKEN")
+    publishingType = "USER_MANAGED"
 }

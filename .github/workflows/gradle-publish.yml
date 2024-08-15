@@ -28,11 +28,6 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-        server-id: central
-        server-username: MAVEN_USERNAME
-        server-password: MAVEN_CENTRAL_TOKEN
-        gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-        gpg-passphrase: MAVEN_GPG_PASSPHRASE
         cache: gradle
 
     - name: Set up Gradle
@@ -43,14 +38,8 @@ jobs:
       env:
         STADIA_API_KEY: ${{ secrets.STADIA_API_KEY }}
 
-    - name: Run JReleaser
-      uses: jreleaser/release-action@v2
+    - name: Stage the package
+      run: ./gradlew publish
 
-    - name: JReleaser release output
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: jreleaser-release
-        path: |
-          out/jreleaser/trace.log
-          out/jreleaser/output.properties
+    - name: Publish to Maven Central
+      run: ./gradlew publish
