@@ -195,5 +195,5 @@ signing {
 mavenCentral {
     repoDir = stagingDir
     authToken = System.getenv("MAVEN_CENTRAL_TOKEN")
-    publishingType = "USER_MANAGED"
+    publishingType = "AUTOMATIC"
 }

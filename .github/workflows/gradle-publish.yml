@@ -4,10 +4,8 @@
 name: Publish to Maven
 
 on:
-  workflow_dispatch:
-    # TODO: Temporary
-#  release:
-#    types: [published]
+  release:
+    types: [published]
 
 jobs:
   build:
