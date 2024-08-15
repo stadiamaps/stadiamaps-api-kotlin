@@ -4,8 +4,10 @@
 name: Gradle Package
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+    # TODO: Temporary
+#  release:
+#    types: [published]
 
 jobs:
   build:
@@ -22,8 +24,12 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-        settings-path: ${{ github.workspace }} # location for the settings.xml file
+        server-id: central
+        server-username: MAVEN_USERNAME
+        server-password: MAVEN_CENTRAL_TOKEN
+        gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+        gpg-passphrase: MAVEN_GPG_PASSPHRASE
+        cache: maven
 
     - name: Set up Gradle
       uses: gradle/actions/setup-gradle@v3
@@ -33,10 +39,5 @@ jobs:
       env:
         STADIA_API_KEY: ${{ secrets.STADIA_API_KEY }}
 
-    # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
-    # the publishing section of your build.gradle
-    - name: Publish to GitHub Packages
-      run: ./gradlew publish
-      env:
-        GITHUB_ACTOR: ${{ github.actor }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Release
+      run: ./gradlew jreleaserFullRelease

@@ -8,6 +8,8 @@ plugins {
     kotlin("jvm")
     id("org.hidetake.swagger.generator") version "2.19.2"
     `maven-publish`
+    id("org.jreleaser") version "1.13.1"
+    id("org.jetbrains.dokka") version "1.9.20"
 }
 
 repositories {
@@ -33,6 +35,10 @@ dependencies {
 
 kotlin {
     jvmToolchain(17)
+}
+
+java {
+    withSourcesJar()
 }
 
 tasks.test {
@@ -65,6 +71,30 @@ tasks.named("generateSwaggerCode").configure {
     dependsOn("downloadOpenAPISpec")
 }
 
+tasks.named<Jar>("sourcesJar").configure {
+    dependsOn("generateSwaggerCode")
+}
+
+tasks.dokkaHtml {
+    dependsOn("generateSwaggerCode")
+    outputDirectory.set(buildDir.resolve("dokkaHtml"))
+    dokkaSourceSets {
+        configureEach {
+            includeNonPublic.set(false)
+            reportUndocumented.set(true)
+            skipEmptyPackages.set(true)
+            skipDeprecated.set(false)
+            jdkVersion.set(11)
+        }
+    }
+}
+
+tasks.register<Jar>("dokkaJavadocJar") {
+    dependsOn("dokkaHtml")
+    archiveClassifier.set("javadoc")
+    from(tasks.dokkaHtml)
+}
+
 swaggerSources {
   register("stadiamaps") {
       val validationTask = validation
@@ -92,25 +122,70 @@ sourceSets {
     main.kotlin.srcDir("${stadiamaps.code.outputDir}/src/main/kotlin")
 }
 
+jreleaser {
+    signing {
+        setActive("ALWAYS")
+        armored = true
+    }
+    deploy {
+        maven {
+            mavenCentral {
+                create("sonatype") {
+                    setActive("ALWAYS")
+                    url = "https://central.sonatype.com/api/v1/publisher"
+                    stagingRepository("target/staging-deploy")
+                }
+            }
+        }
+    }
+}
+
 publishing {
     repositories {
         maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/stadiamaps/stadiamaps-api-kotlin")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
+            url = layout.buildDirectory.dir("staging-deploy").get().asFile.toURI()
         }
     }
 
     publications {
-        register<MavenPublication>("gpr") {
+        register<MavenPublication>("publication") {
             from(components["java"])
+
+            // Add the Dokka Javadoc jar as an artifact
+            artifact(tasks["dokkaJavadocJar"]) {
+                classifier = "javadoc"
+            }
 
             groupId = "com.stadiamaps"
             artifactId = "api"
             version = "3.1.0"
+
+
+            pom {
+                name = "Stadia Maps Kotlin API"
+                description = "An API client library for accessing the Stadia Maps Geospatial APIs"
+                url = "https://github.com/stadiamaps/stadiamaps-api-kotlin"
+                inceptionYear = "2023"
+                licenses {
+                    license {
+                        name = "BSD-3-Clause"
+                        url = "https://spdx.org/licenses/BSD-3-Clause.html"
+                    }
+                }
+                developers {
+                    developer {
+                        name = "Ian Wagner"
+                        organization = "Stadia Maps"
+                        organizationUrl = "https://stadiamaps.com/"
+                    }
+                }
+                scm {
+                    connection = "scm:git:https://github.com/stadiamaps/stadiamaps-api-kotlin.git"
+                    developerConnection = "scm:git:ssh://github.com/stadiamaps/stadiamaps-api-kotlin.git"
+                    url = "http://github.com/stadiamaps/stadiamaps-api-kotlin"
+                }
+            }
+
         }
     }
 }
