@@ -10,11 +10,6 @@ your stack (ex: using okhttp), we've written a tutorial on generating code withi
 
 ## Getting started with Gradle
 
-### Authenticate to GitHub Packages
-
-You'll need an access token to install from GitHub packages. See the [GitHub Packages docs](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#authenticating-to-github-packages)
-for details.
-
 ### Add Maven Central to your build script
 
 Add the following to your build script (`build.gradle.kts` or `build.gradle`):
