@@ -128,6 +128,15 @@ sourceSets {
 publishing {
     repositories {
         maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/stadiamaps/stadiamaps-api-kotlin")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+
+        maven {
             url = stagingDir.asFile.toURI()
         }
     }

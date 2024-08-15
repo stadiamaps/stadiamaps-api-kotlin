@@ -15,39 +15,13 @@ your stack (ex: using okhttp), we've written a tutorial on generating code withi
 You'll need an access token to install from GitHub packages. See the [GitHub Packages docs](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#authenticating-to-github-packages)
 for details.
 
-### Add the repository to build script
+### Add Maven Central to your build script
 
-Add the repository to your `repositories` block like so.
-
-Kotlin build script (`build.gradle.kts`):
+Add the following to your build script (`build.gradle.kts` or `build.gradle`):
 
 ```kotlin
 repositories {
     mavenCentral()
-    
-    maven {
-        url = uri("https://maven.pkg.github.com/stadiamaps/stadiamaps-api-kotlin")
-        credentials {
-            username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-            password = project.findProperty("gpr.token") as String? ?: System.getenv("TOKEN")
-        }
-    }
-}
-```
-
-Groovy build script (`build.gradle`):
-
-```groovy
-repositories {
-    mavenCentral()
-    
-    maven {
-        url = uri("https://maven.pkg.github.com/stadiamaps/stadiamaps-api-kotlin")
-        credentials {
-            username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-            password = project.findProperty("gpr.token") ?: System.getenv("TOKEN")
-        }
-   }
 }
 ```
 
@@ -62,7 +36,7 @@ dependencies {
     val retrofitVersion = "2.9.0"
     
     // API package
-    implementation("com.stadiamaps:api:1.0.0")
+    implementation("com.stadiamaps:api:3.2.0")
 
     // Dependencies
     implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
@@ -81,7 +55,7 @@ dependencies {
     def retrofitVersion = "2.9.0"
     
     // API package
-    implementation 'com.stadiamaps:api:1.0.0'
+    implementation 'com.stadiamaps:api:3.2.0'
 
     // Dependencies
     implementation 'com.squareup.moshi:moshi-kotlin:1.15.1'

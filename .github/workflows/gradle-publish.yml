@@ -38,7 +38,7 @@ jobs:
       env:
         STADIA_API_KEY: ${{ secrets.STADIA_API_KEY }}
 
-    - name: Stage the package
+    - name: Gradle Publish
       run: ./gradlew publish
       env:
         GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
