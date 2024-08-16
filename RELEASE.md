@@ -1,6 +1,7 @@
 # Releasing to Maven Central
 
 Releases are done automatically using GitHub actions.
+Just bump the version number in settings.gradle and create a GitHub release.
 This will keep on working until it doesn't every few years ;)
 This document is here to help when that happens.
 

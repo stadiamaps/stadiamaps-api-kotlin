@@ -5,7 +5,7 @@ servers:
 info:
   description: >-
     The Stadia Maps Geospatial APIs provide you with the data you need to build awesome applications.
-  version: 6.6.2
+  version: 6.6.3
   title: Stadia Maps Geospatial APIs
   contact:
     name: Stadia Maps Support
@@ -2190,17 +2190,6 @@ components:
           $ref: '#/components/schemas/limit'
         lang:
           $ref: '#/components/schemas/peliasLang'
-    searchBulkQuery:
-        type: object
-        properties:
-          endpoint:
-            type: string
-            enum:
-              - /v1/search
-          query:
-            type: object
-            allOf:
-              - $ref: '#/components/schemas/searchQuery'
     searchStructuredQuery:
       type: object
       properties:
@@ -2250,27 +2239,21 @@ components:
           $ref: '#/components/schemas/limit'
         lang:
           $ref: '#/components/schemas/peliasLang'
-    searchStructuredBulkQuery:
-      type: object
-      properties:
-        endpoint:
-          type: string
-          enum:
-            - /v1/search/structured
-        query:
-          $ref: '#/components/schemas/searchStructuredQuery'
     bulkSearchRequest:
       type: array
       items:
         title: BulkRequest
-        oneOf:
-          - $ref: '#/components/schemas/searchBulkQuery'
-          - $ref: '#/components/schemas/searchStructuredBulkQuery'
-        discriminator:
-          propertyName: endpoint
-          mapping:
-            /v1/search: '#/components/schemas/searchBulkQuery'
-            /v1/search/structured: '#/components/schemas/searchStructuredBulkQuery'
+        type: object
+        properties:
+          endpoint:
+            type: string
+            enum:
+              - /v1/search
+              - /v1/search/structured
+          query:
+            oneOf:
+              - $ref: '#/components/schemas/searchQuery'
+              - $ref: '#/components/schemas/searchStructuredQuery'
       example:
         [
           { "endpoint": "/v1/search", "query": { "text": "Põhja pst 27" } },

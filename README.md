@@ -28,7 +28,7 @@ Kotlin:
 
 ```kotlin
 dependencies {
-    val retrofitVersion = "2.9.0"
+    val retrofitVersion = "2.11.0"
     
     // API package
     implementation("com.stadiamaps:api:3.2.0")
@@ -47,7 +47,7 @@ Groovy:
 
 ```groovy
 dependencies {
-    def retrofitVersion = "2.9.0"
+    def retrofitVersion = "2.11.0"
     
     // API package
     implementation 'com.stadiamaps:api:3.2.0'

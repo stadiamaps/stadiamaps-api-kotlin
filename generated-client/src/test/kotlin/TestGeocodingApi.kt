@@ -2,7 +2,7 @@ import com.stadiamaps.api.apis.GeocodingApi
 import com.stadiamaps.api.auth.ApiKeyAuth
 import com.stadiamaps.api.infrastructure.ApiClient
 import com.stadiamaps.api.infrastructure.CollectionFormats
-import com.stadiamaps.api.models.PeliasLayer
+import com.stadiamaps.api.models.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -45,6 +45,22 @@ internal class TestGeocodingApi {
 
         assertEquals("Estonia", body.features.first().properties!!.country)
         assertEquals(PeliasLayer.address, body.features.first().properties!!.layer)
+    }
+
+    @Test
+    fun testSearchBulk() {
+        val reqs = listOf(
+            BulkRequestFactory.searchRequest(SearchQuery(text = address)),
+            BulkRequestFactory.searchStructuredRequest(SearchStructuredQuery(address = address, country = "Estonia"))
+        )
+        val res = service.searchBulk(reqs).execute()
+        val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
+
+        for (rec in body) {
+            assertEquals(200, rec.status)
+            assertEquals("Estonia", rec.response!!.features.first().properties!!.country)
+            assertEquals(PeliasLayer.address, rec.response!!.features.first().properties!!.layer)
+        }
     }
 
     @Test
