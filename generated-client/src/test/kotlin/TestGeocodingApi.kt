@@ -1,4 +1,4 @@
-import com.stadiamaps.api.apis.GeocodingApi
+import com.stadiamaps.api.GeocodingApi
 import com.stadiamaps.api.auth.ApiKeyAuth
 import com.stadiamaps.api.infrastructure.ApiClient
 import com.stadiamaps.api.infrastructure.CollectionFormats
@@ -26,7 +26,7 @@ internal class TestGeocodingApi {
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals("Estonia", body.features.first().properties!!.country)
-        assertEquals(PeliasLayer.address, body.features.first().properties!!.layer)
+        assertEquals(GeocodingLayer.address, body.features.first().properties!!.layer)
     }
 
     @Test
@@ -35,7 +35,7 @@ internal class TestGeocodingApi {
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals("Estonia", body.features.first().properties!!.country)
-        assertEquals(PeliasLayer.address, body.features.first().properties!!.layer)
+        assertEquals(GeocodingLayer.address, body.features.first().properties!!.layer)
     }
 
     @Test
@@ -44,7 +44,7 @@ internal class TestGeocodingApi {
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals("Estonia", body.features.first().properties!!.country)
-        assertEquals(PeliasLayer.address, body.features.first().properties!!.layer)
+        assertEquals(GeocodingLayer.address, body.features.first().properties!!.layer)
     }
 
     @Test
@@ -59,7 +59,7 @@ internal class TestGeocodingApi {
         for (rec in body) {
             assertEquals(200, rec.status)
             assertEquals("Estonia", rec.response!!.features.first().properties!!.country)
-            assertEquals(PeliasLayer.address, rec.response!!.features.first().properties!!.layer)
+            assertEquals(GeocodingLayer.address, rec.response!!.features.first().properties!!.layer)
         }
     }
 
@@ -69,7 +69,7 @@ internal class TestGeocodingApi {
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals("Estonia", body.features.first().properties!!.country)
-        assertEquals(PeliasLayer.address, body.features.first().properties!!.layer)
+        assertEquals(GeocodingLayer.address, body.features.first().properties!!.layer)
     }
 
     @Test
@@ -77,7 +77,7 @@ internal class TestGeocodingApi {
         val res = service.reverse(24.750645, 59.444351).execute()
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
-        assertEquals(PeliasLayer.marinearea, body.features.first().properties!!.layer)
+        assertEquals(GeocodingLayer.marinearea, body.features.first().properties!!.layer)
     }
 
     @Test
@@ -86,6 +86,6 @@ internal class TestGeocodingApi {
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals("Estonia", body.features.first().properties!!.country)
-        assertEquals(PeliasLayer.address, body.features.first().properties!!.layer)
+        assertEquals(GeocodingLayer.address, body.features.first().properties!!.layer)
     }
 }

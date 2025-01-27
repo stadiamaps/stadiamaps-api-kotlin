@@ -19,4 +19,3 @@ To export the private key, you can run the following command (requires passphara
 ```shell
 gpg --output mavencentral.pgp --armor --export-secret-key you@example.com
 ```
-

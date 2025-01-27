@@ -1,6 +1,6 @@
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import com.stadiamaps.api.apis.GeospatialApi
+import com.stadiamaps.api.GeospatialApi
 import com.stadiamaps.api.auth.ApiKeyAuth
 import com.stadiamaps.api.infrastructure.ApiClient
 import com.stadiamaps.api.models.Coordinate

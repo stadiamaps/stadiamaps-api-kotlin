@@ -5,6 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Version 4.0.0 - 2025-01-27
+
+### Added
+
+- Adds support for the OSRM format and navigation aids.
+- Explicitly documented more properties on the geocoding feature model.
+- Adds support for the `foursquare` data source.
+- Documents the elevation interval parameter on certain routing requests.
+
+### Changed
+
+- BREAKING: This unfortunately means that some properties of the route response model, due to how the OpenAPI generator handles these models (it does not know how to generate variant models yet).
+- BREAKING: Renamed models containing Valhalla and Pelias in their names to be generic. These now have rout(e|ing) or geocod(e|ing) prefixes.
+- BREAKING: Removed one layer of nesting in the API namespace.
+- Switched to [OpenAPI Generator](https://openapi-generator.tech/docs/generators/kotlin/) as the previous plugin appears to be abandoned.
+
+### Migration notes
+
+#### Imports
+
+API imports have changed slightly, removing one level of nesting.
+Simply remove the `apis` package from the path like so:
+
+```diff
+- import com.stadiamaps.api.apis.GeocodingApi
++ import com.stadiamaps.api.GeocodingApi
+```
+
+#### Renamed types
+
+Several geocoding and routing types have been renamed to reflect their purpose better.
+All types beginning with `Pelias` (e.g. `PeliasLayer`) now have a `Geocoding` prefix (e.g. `GeocodingLayer`).
+Similarly, all types with a `Valhalla` prefix (e.g. `ValhallaLanguage`) now have a `Routing` prefix (e.g. `RoutingLanguage`). 
+
+#### Routing API model changes
+
+Some properties of `Route200Response` are now optional.
+This is due to a bug in the OpenAPI generator for Kotlin,
+which coalesces all properties into a single model rather than having two variations on the model based on format.
+When requesting a route with navigation aids (`format = RouteRequest.Format.osrm`),
+the `routes` property will contain the enhanced route information.
+Existing code using the original compact format will continue using the `trip` property.
+When you receive a successful response, your code can safely use the nun-null assertion operator (`!!`).
+
 ## Version 3.2.1 - 2024-08-15
 
 ### Fixed

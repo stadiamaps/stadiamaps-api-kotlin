@@ -4,7 +4,7 @@ abstract class BulkRequestFactory {
     companion object {
         fun searchRequest(query: SearchQuery) =
             BulkRequest(
-                BulkRequest.Endpoint.search, BulkRequestQuery(
+                BulkRequest.Endpoint.SlashV1SlashSearch, BulkRequestQuery(
                     text = query.text,
                     focusPointLat = query.focusPointLat,
                     focusPointLon = query.focusPointLon,
@@ -26,7 +26,7 @@ abstract class BulkRequestFactory {
 
         fun searchStructuredRequest(query: SearchStructuredQuery) =
             BulkRequest(
-                BulkRequest.Endpoint.searchSlashStructured, BulkRequestQuery(
+                BulkRequest.Endpoint.SlashV1SlashSearchSlashStructured, BulkRequestQuery(
                     address = query.address,
                     neighbourhood = query.neighbourhood,
                     borough = query.borough,

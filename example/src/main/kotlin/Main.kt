@@ -1,6 +1,6 @@
-import com.stadiamaps.api.apis.GeocodingApi
-import com.stadiamaps.api.apis.GeospatialApi
-import com.stadiamaps.api.apis.RoutingApi
+import com.stadiamaps.api.GeocodingApi
+import com.stadiamaps.api.GeospatialApi
+import com.stadiamaps.api.RoutingApi
 import com.stadiamaps.api.auth.ApiKeyAuth
 import com.stadiamaps.api.infrastructure.ApiClient
 import com.stadiamaps.api.models.*
