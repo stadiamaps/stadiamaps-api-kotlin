@@ -6,6 +6,7 @@ import com.stadiamaps.api.models.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.fail
 
 internal class TestGeocodingApi {
@@ -26,7 +27,16 @@ internal class TestGeocodingApi {
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals("Estonia", body.features.first().properties!!.country)
-        assertEquals(GeocodingLayer.address, body.features.first().properties!!.layer)
+        assertEquals("address", body.features.first().properties!!.layer)
+    }
+
+    @Test
+    fun testAutocompleteV2() {
+        val res = service.autocompleteV2(address).execute()
+        val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
+
+        assertNull(body.features.first().properties.context)
+        assertEquals("address", body.features.first().properties.layer)
     }
 
     @Test
@@ -35,7 +45,7 @@ internal class TestGeocodingApi {
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals("Estonia", body.features.first().properties!!.country)
-        assertEquals(GeocodingLayer.address, body.features.first().properties!!.layer)
+        assertEquals("address", body.features.first().properties!!.layer)
     }
 
     @Test
@@ -44,7 +54,7 @@ internal class TestGeocodingApi {
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals("Estonia", body.features.first().properties!!.country)
-        assertEquals(GeocodingLayer.address, body.features.first().properties!!.layer)
+        assertEquals("address", body.features.first().properties!!.layer)
     }
 
     @Test
@@ -59,7 +69,7 @@ internal class TestGeocodingApi {
         for (rec in body) {
             assertEquals(200, rec.status)
             assertEquals("Estonia", rec.response!!.features.first().properties!!.country)
-            assertEquals(GeocodingLayer.address, rec.response!!.features.first().properties!!.layer)
+            assertEquals("address", rec.response!!.features.first().properties!!.layer)
         }
     }
 
@@ -69,7 +79,6 @@ internal class TestGeocodingApi {
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals("Estonia", body.features.first().properties!!.country)
-        assertEquals(GeocodingLayer.address, body.features.first().properties!!.layer)
     }
 
     @Test
@@ -77,15 +86,25 @@ internal class TestGeocodingApi {
         val res = service.reverse(24.750645, 59.444351).execute()
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
-        assertEquals(GeocodingLayer.marinearea, body.features.first().properties!!.layer)
+        assertEquals("marinearea", body.features.first().properties!!.layer)
     }
 
     @Test
-    fun testPlace() {
-        val res = service.place(CollectionFormats.CSVParams("openstreetmap:address:way/109867749")).execute()
+    fun testPlaceDetailsV1() {
+        val res = service.placeDetails(CollectionFormats.CSVParams("openstreetmap:address:way/109867749")).execute()
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals("Estonia", body.features.first().properties!!.country)
-        assertEquals(GeocodingLayer.address, body.features.first().properties!!.layer)
+        assertEquals("address", body.features.first().properties!!.layer)
+    }
+
+    @Test
+    fun testPlaceDetailsV2() {
+        val res = service.placeDetailsV2(CollectionFormats.CSVParams("openstreetmap:address:way/109867749")).execute()
+        val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
+
+        assertEquals("Estonia", body.features.first().properties.context?.whosonfirst?.country?.name)
+        assertEquals("EST", body.features.first().properties.context?.iso3166A3)
+        assertEquals("address", body.features.first().properties.layer)
     }
 }

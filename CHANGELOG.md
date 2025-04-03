@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Version 5.0.0 - 2025-04-07
+
+### Added
+
+- Support for the v2 autocomplete and place details APIs!
+- **BREAKING:** We have renamed the Place Details method to clarify its purpose.
+
+If you want to keep using the v1 endpoint, you can amend your code like so:
+
+```diff
+- val res = service.place(CollectionFormats.CSVParams("openstreetmap:address:way/109867749")).execute()
++ val res = service.placeDetails(CollectionFormats.CSVParams("openstreetmap:address:way/109867749")).execute()
+```
+
+To upgrade to the v2 Place Details endpoint, which features improved address formatting,
+use the new V2 method:
+
+```diff
+- val res = service.place(CollectionFormats.CSVParams("openstreetmap:address:way/109867749")).execute()
++ val res = service.placeDetailsV2(CollectionFormats.CSVParams("openstreetmap:address:way/109867749")).execute()
+```
+
+We are also changing the `layer` property to a string.
+While layer identifiers remain strongly typed at request time,
+we have relaxed the schema type here to allow new layers in the future without breaking existing clients
+(Kotlin, Python, and others will crash when they see an unknown variant in enum mode).
+
+You will receive errors for all breaking changes at build time, so there should not be any hidden surprises.
+We expect the upgrade to take less than 5 minutes.
+
+For an overview of the structural changes we've made in the V2 API,
+refer to the [migration guide](https://docs.stadiamaps.com/geocoding-search-autocomplete/v2-api-migration-guide/).
+
+### Fixed
+
+- The v1 geocoding model now includes the confidence score. This was always available in the API response, but wasn't in the OpenAPI spec.
+
 ## Version 4.0.0 - 2025-01-27
 
 ### Added

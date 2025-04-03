@@ -17,7 +17,7 @@ import org.yaml.snakeyaml.constructor.SafeConstructor
 
 plugins {
     kotlin("jvm")
-    id("org.openapi.generator") version "7.11.0"
+    id("org.openapi.generator") version "7.12.0"
     `maven-publish`
     signing
     id("org.jetbrains.dokka") version "1.9.20"
@@ -119,7 +119,8 @@ tasks.named("patchOpenAPISpec").configure {
 }
 
 tasks.named("openApiGenerate").configure {
-    dependsOn("patchOpenAPISpec")
+    // Temporarily commented out because the generator is so buggy.
+//    dependsOn("patchOpenAPISpec")
 }
 
 tasks.named<Jar>("sourcesJar").configure {
@@ -185,7 +186,7 @@ publishing {
         create<MavenPublication>("publication") {
             groupId = "com.stadiamaps"
             artifactId = "api"
-            version = "4.0.0"
+            version = "5.0.0"
 
             from(components["java"])
 
