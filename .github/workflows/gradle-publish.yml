@@ -39,7 +39,7 @@ jobs:
     - name: Gradle Publish
       run: ./gradlew publish
       env:
-        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_SECRET_KEY }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
         GITHUB_ACTOR: ${{ github.actor }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
