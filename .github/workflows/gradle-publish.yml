@@ -36,17 +36,11 @@ jobs:
       env:
         STADIA_API_KEY: ${{ secrets.STADIA_API_KEY }}
 
-    - name: Gradle Publish
-      run: ./gradlew publish
-      env:
-        GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_SECRET_KEY }}
-        MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
-        GITHUB_ACTOR: ${{ github.actor }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Publish to Maven Central
       run: ./gradlew publishToMavenCentralPortal
       env:
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_B64_TOKEN }}
         GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_SECRET_KEY }}
         MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
