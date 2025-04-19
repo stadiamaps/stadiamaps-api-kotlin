@@ -90,6 +90,22 @@ internal class TestGeocodingApi {
     }
 
     @Test
+    fun testReverseV2() {
+        val res = service.reverseV2(59.444351, 24.750645).execute()
+        val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
+
+        assertEquals("EST", body.features.first().properties.context?.iso3166A3)
+    }
+
+    @Test
+    fun testReverseUncommonLayerV2() {
+        val res = service.reverseV2(24.750645, 59.444351).execute()
+        val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
+
+        assertEquals("marinearea", body.features.first().properties.layer)
+    }
+
+    @Test
     fun testPlaceDetailsV1() {
         val res = service.placeDetails(CollectionFormats.CSVParams("openstreetmap:address:way/109867749")).execute()
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")

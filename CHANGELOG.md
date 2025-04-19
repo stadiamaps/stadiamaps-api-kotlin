@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Version 1.1.0 - 2025-04-19
+
+### Added
+
+* Support for the v2 reverse geocoding endpoint! The new API includes better structure, more details, and better address formatting.
+
+```diff
+- val res = service.reverse(59.444351, 24.750645).execute()
++ val res = service.reverseV2(59.444351, 24.750645).execute()
+```
+
+For an overview of the structural changes we've made in the V2 API,
+refer to the [migration guide](https://docs.stadiamaps.com/geocoding-search-autocomplete/v2-api-migration-guide/).
+
+### Fixed
+
+* Added the `wheelchair` property to the OSM addendum model (it was in the API response, but not explicitly modeled).
+* Fix the types of the Natural Earth and Karmashapes identifiers
+
 ## Version 5.0.0 - 2025-04-07
 
 ### Added

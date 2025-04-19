@@ -5,7 +5,7 @@ servers:
 info:
   description: >-
     The Stadia Maps Geospatial APIs provide you with the data you need to build awesome applications.
-  version: 9.0.0
+  version: 9.1.1
   title: Stadia Maps Geospatial APIs
   contact:
     name: Stadia Maps Support
@@ -716,6 +716,148 @@ paths:
           explode: false
           example:
             - whosonfirst:locality:102026327
+        - name: lang
+          in: query
+          description: 'A BCP47 language tag which specifies a preference for localization of results. There is no default value, so place names will be returned as-is, which is usually in the local language. NOTE: The Accept-Language header is also respected, and many user agents will set it automatically.'
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A GeoJSON FeatureCollection with the results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeocodeResponseEnvelope_PropertiesV2'
+        '400':
+          description: A response with a description of why the request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeocodeResponseEnvelope_PropertiesV2'
+              example:
+                features: [ ]
+                geocoding:
+                  attribution: https://stadiamaps.com/attribution/
+                  error: missing required parameter foo
+                type: FeatureCollection
+        '500':
+          description: A response with a description of what went wrong internally
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeocodeResponseEnvelope_PropertiesV2'
+              example:
+                features: [ ]
+                geocoding:
+                  attribution: https://stadiamaps.com/attribution/
+                  error: internal server error
+                type: FeatureCollection
+      security:
+        - ApiKeyAuth: [ ]
+  /geocoding/v2/reverse:
+    get:
+      tags:
+        - Geocoding
+      operationId: reverse-v2
+      parameters:
+        - name: point.lat
+          in: query
+          description: The latitude of the point at which to perform the search.
+          required: true
+          schema:
+            $ref: '#/components/schemas/Latitude'
+          style: form
+          example: 48.848268
+        - name: point.lon
+          in: query
+          description: The longitude of the point at which to perform the search.
+          required: true
+          schema:
+            $ref: '#/components/schemas/Longitude'
+          style: form
+          example: 2.294471
+        - name: layers
+          in: query
+          description: A list of layers to limit the search to.
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/LayerId'
+          style: form
+          explode: false
+        - name: sources
+          in: query
+          description: A list of sources to limit the search to.
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/SourceId'
+          style: form
+          explode: false
+        - name: boundary.gid
+          in: query
+          description: |-
+            The GID of a region to limit the search to.
+            
+            Note: these are not stable for all datasets! For example, OSM features may be deleted and re-added with a new ID.
+          required: false
+          schema:
+            $ref: '#/components/schemas/DocumentGid'
+          style: form
+        - name: boundary.country
+          in: query
+          description: |-
+            A list of comma-separated country codes in ISO 3116-1 alpha-2 or alpha-3 format.
+            The search will be limited to these countries.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+        - name: boundary.circle.lat
+          in: query
+          description: |-
+            The latitude of the center of a circle to limit the search to.
+            
+            NOTE: Requires boundary.circle.lon.
+          required: false
+          schema:
+            $ref: '#/components/schemas/Latitude'
+          style: form
+        - name: boundary.circle.lon
+          in: query
+          description: |-
+            The longitude of the center of a circle to limit the search to.
+            
+            NOTE: Requires boundary.circle.lat.
+          required: false
+          schema:
+            $ref: '#/components/schemas/Longitude'
+          style: form
+        - name: boundary.circle.radius
+          in: query
+          description: |-
+            The radius of the circle (in kilometers) to limit the search to.
+            
+            NOTE: Requires the other boundary.circle parameters to take effect.
+            Defaults to 2km if unspecified.
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+          style: form
+        - name: size
+          in: query
+          description: The maximum number of items to return from a query.
+          required: false
+          schema:
+            $ref: '#/components/schemas/QuerySizeLimit'
+          style: form
         - name: lang
           in: query
           description: 'A BCP47 language tag which specifies a preference for localization of results. There is no default value, so place names will be returned as-is, which is usually in the local language. NOTE: The Accept-Language header is also respected, and many user agents will set it automatically.'
@@ -6042,7 +6184,7 @@ components:
       minimum: -90
     LayerId:
       type: string
-      description: Canonical geocoding layer IDs.
+      description: Canonical geocoding layer IDs for querying.
       enum:
         - poi
         - address
@@ -6082,6 +6224,10 @@ components:
         - fallback
     OpenStreetMapAddendum:
       type: object
+      description: |-
+        OpenStreetMap-specific additional fields.
+        
+        These values are exactly as they appear in the associated OSM tag.
       properties:
         brand:
           type:
@@ -6125,6 +6271,11 @@ components:
           type:
             - string
             - 'null'
+        wheelchair:
+          type:
+            - string
+            - 'null'
+          description: Is this place wheelchair accessible?
         wikidata:
           type:
             - string
@@ -6352,13 +6503,13 @@ components:
             - 'null'
         karmashapes_id:
           type:
+            - string
+            - 'null'
+        natural_earth_id:
+          type:
             - integer
             - 'null'
           format: int64
-        natural_earth_id:
-          type:
-            - string
-            - 'null'
         nuts_2021_id:
           type:
             - string
