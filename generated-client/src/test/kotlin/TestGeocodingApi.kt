@@ -23,7 +23,7 @@ internal class TestGeocodingApi {
 
     @Test
     fun testAutocomplete() {
-        val res = service.autocomplete(address).execute()
+        val res = service.autocomplete(address, lang = "en").execute()
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals("Estonia", body.features.first().properties!!.country)
@@ -32,7 +32,7 @@ internal class TestGeocodingApi {
 
     @Test
     fun testAutocompleteV2() {
-        val res = service.autocompleteV2(address).execute()
+        val res = service.autocompleteV2(address, lang = "en").execute()
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertNull(body.features.first().properties.context)
@@ -91,7 +91,7 @@ internal class TestGeocodingApi {
 
     @Test
     fun testReverseV2() {
-        val res = service.reverseV2(59.444351, 24.750645).execute()
+        val res = service.reverseV2(59.444351, 24.750645, lang = "en").execute()
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals("EST", body.features.first().properties.context?.iso3166A3)
@@ -99,7 +99,7 @@ internal class TestGeocodingApi {
 
     @Test
     fun testReverseUncommonLayerV2() {
-        val res = service.reverseV2(24.750645, 59.444351).execute()
+        val res = service.reverseV2(24.750645, 59.444351, lang = "en").execute()
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals("marinearea", body.features.first().properties.layer)
@@ -116,7 +116,7 @@ internal class TestGeocodingApi {
 
     @Test
     fun testPlaceDetailsV2() {
-        val res = service.placeDetailsV2(CollectionFormats.CSVParams("openstreetmap:address:way/109867749")).execute()
+        val res = service.placeDetailsV2(CollectionFormats.CSVParams("openstreetmap:address:way/109867749"), lang = "en").execute()
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
 
         assertEquals("Estonia", body.features.first().properties.context?.whosonfirst?.country?.name)

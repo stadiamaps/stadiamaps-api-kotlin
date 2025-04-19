@@ -68,7 +68,7 @@ fun testGeocodingApis(client: ApiClient) {
         println("Request failed with error code ${structuredSearch.code()}")
     }
 
-    val reverseGeocode = geocodingService.reverse(kultuurikatel.lat, kultuurikatel.lon).execute()
+    val reverseGeocode = geocodingService.reverse(kultuurikatel.lat, kultuurikatel.lon, lang = "en").execute()
 
     if (reverseGeocode.isSuccessful) {
         println("Found reverse geocode result: ${reverseGeocode.body()?.features?.first()}")
