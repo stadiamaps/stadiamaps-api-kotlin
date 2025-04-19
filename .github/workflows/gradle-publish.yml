@@ -48,3 +48,5 @@ jobs:
       run: ./gradlew publishToMavenCentralPortal
       env:
         MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_B64_TOKEN }}
+        GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_SECRET_KEY }}
+        MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}

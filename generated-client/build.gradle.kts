@@ -187,7 +187,7 @@ publishing {
         create<MavenPublication>("publication") {
             groupId = "com.stadiamaps"
             artifactId = "api"
-            version = "5.1.0"
+            version = "5.1.1"
 
             from(components["java"])
 
