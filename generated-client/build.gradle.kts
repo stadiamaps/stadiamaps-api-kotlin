@@ -21,7 +21,7 @@ plugins {
     `maven-publish`
     signing
     id("org.jetbrains.dokka") version "1.9.20"
-    id("tech.yanand.maven-central-publish") version "1.1.1"
+    id("tech.yanand.maven-central-publish") version "1.3.0"
 }
 
 val stagingDir = layout.buildDirectory.dir("staging-deploy").get()
@@ -178,6 +178,7 @@ publishing {
         }
 
         maven {
+            name = "local"
             url = stagingDir.asFile.toURI()
         }
     }

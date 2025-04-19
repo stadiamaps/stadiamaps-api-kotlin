@@ -47,4 +47,4 @@ jobs:
     - name: Publish to Maven Central
       run: ./gradlew publishToMavenCentralPortal
       env:
-        MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+        MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_B64_TOKEN }}
