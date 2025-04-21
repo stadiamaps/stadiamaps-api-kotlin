@@ -5,7 +5,7 @@ servers:
 info:
   description: >-
     The Stadia Maps Geospatial APIs provide you with the data you need to build awesome applications.
-  version: 9.1.1
+  version: 9.2.1
   title: Stadia Maps Geospatial APIs
   contact:
     name: Stadia Maps Support
@@ -636,7 +636,7 @@ paths:
           description: |-
             The longitude of the center of a circle to limit the search to.
             
-            NOTE: Requires boundary.circle.lon.
+            NOTE: Requires boundary.circle.lat.
           required: false
           schema:
             $ref: '#/components/schemas/Longitude'
@@ -819,36 +819,16 @@ paths:
               type: string
           style: form
           explode: false
-        - name: boundary.circle.lat
-          in: query
-          description: |-
-            The latitude of the center of a circle to limit the search to.
-            
-            NOTE: Requires boundary.circle.lon.
-          required: false
-          schema:
-            $ref: '#/components/schemas/Latitude'
-          style: form
-        - name: boundary.circle.lon
-          in: query
-          description: |-
-            The longitude of the center of a circle to limit the search to.
-            
-            NOTE: Requires boundary.circle.lat.
-          required: false
-          schema:
-            $ref: '#/components/schemas/Longitude'
-          style: form
         - name: boundary.circle.radius
           in: query
           description: |-
             The radius of the circle (in kilometers) to limit the search to.
             
-            NOTE: Requires the other boundary.circle parameters to take effect.
-            Defaults to 2km if unspecified.
+            Defaults to 1km if unspecified.
           required: false
           schema:
             type: integer
+            maximum: 25
             minimum: 0
           style: form
         - name: size
@@ -2380,7 +2360,7 @@ components:
                 Roads intersecting these rings will be avoided during path finding. Open rings will be
                 closed automatically.
                 If you only need to avoid a few specific roads, it's much more efficient to use `exclude_locations`.
-              example: [[[30, 10], [40, 40], [20, 40], [10, 20], [30, 10]]]
+              example: [ [ [ 30, 10 ], [ 40, 40 ], [ 20, 40 ], [ 10, 20 ], [ 30, 10 ] ] ]
             alternates:
               type: integer
               description: >-
@@ -2537,7 +2517,7 @@ components:
                 almost perfectly. `map_snap` can handle significantly noisier data, but is very expensive.
                 `walk_or_snap`, the default, tries to use edge walking first and falls back to map matching
                 if edge walking fails.
-    
+                
                 In general, you should not need to change this parameter unless you want to trace a multi-leg
                 route with multiple `break` locations in the `shape`.
         - $ref: '#/components/schemas/directionsOptions'
@@ -3246,8 +3226,8 @@ components:
                     "verbal_pre_transition_instruction": "Drive west on Alaska 1, Seward Highway. Then You will arrive at your destination.",
                     "verbal_post_transition_instruction": "Continue for 900 feet.",
                     "street_names": [
-                        "AK 1",
-                        "Seward Highway"
+                      "AK 1",
+                      "Seward Highway"
                     ],
                     "time": 11.487,
                     "length": 0.176,
@@ -3621,7 +3601,7 @@ components:
                     "verbal_pre_transition_instruction": "Turn right onto Jefferson Street.",
                     "verbal_post_transition_instruction": "Continue for 80 feet.",
                     "street_names": [
-                        "Jefferson Street"
+                      "Jefferson Street"
                     ],
                     "time": 16.941,
                     "length": 0.014,
@@ -3668,7 +3648,7 @@ components:
                     "verbal_pre_transition_instruction": "Turn left onto Hyde Street.",
                     "verbal_post_transition_instruction": "Continue for 300 feet.",
                     "street_names": [
-                        "Hyde Street"
+                      "Hyde Street"
                     ],
                     "time": 58.588,
                     "length": 0.051,
@@ -3732,7 +3712,7 @@ components:
                     "verbal_pre_transition_instruction": "Turn right onto Beach Street.",
                     "verbal_post_transition_instruction": "Continue for 500 feet.",
                     "street_names": [
-                        "Beach Street"
+                      "Beach Street"
                     ],
                     "time": 110.705,
                     "length": 0.095,
@@ -3749,7 +3729,7 @@ components:
                     "verbal_pre_transition_instruction": "Turn left onto Polk Street.",
                     "verbal_post_transition_instruction": "Continue for 300 feet.",
                     "street_names": [
-                        "Polk Street"
+                      "Polk Street"
                     ],
                     "time": 68.058,
                     "length": 0.059,
@@ -3781,7 +3761,7 @@ components:
                     "verbal_pre_transition_instruction": "Turn left onto Van Ness Avenue.",
                     "verbal_post_transition_instruction": "Continue for 400 feet.",
                     "street_names": [
-                        "Van Ness Avenue"
+                      "Van Ness Avenue"
                     ],
                     "time": 83.294,
                     "length": 0.073,
@@ -3830,7 +3810,7 @@ components:
                     "verbal_pre_transition_instruction": "Turn right onto Bay Street.",
                     "verbal_post_transition_instruction": "Continue for 900 feet.",
                     "street_names": [
-                        "Bay Street"
+                      "Bay Street"
                     ],
                     "time": 194.823,
                     "length": 0.171,
@@ -3847,7 +3827,7 @@ components:
                     "verbal_pre_transition_instruction": "Turn left onto Gough Street. Then You will arrive at your destination.",
                     "verbal_post_transition_instruction": "Continue for 20 feet.",
                     "street_names": [
-                        "Gough Street"
+                      "Gough Street"
                     ],
                     "time": 3.302,
                     "length": 0.002,
@@ -3886,42 +3866,42 @@ components:
               }
             ],
             "linear_references": [
-                "C6jyLBrisjr3Af+4//g6BA==",
-                "C6jyCxrirjr3AAAA//s6Bw==",
-                "C6jyDBriqyKUAP/j//0iAg==",
-                "C6jx/xriqTr3AAAA//w6Ag==",
-                "C6jx/xripjr0AP/2AAE6Hg==",
-                "C6jx+xripiKUAQAM/8kiHw==",
-                "C6jyARrijCKPAAAC/+8iBg==",
-                "C6jyAxrihDrvAP/0AAM6BQ==",
-                "C6jx/hrihTrzAP/5//o6Bw==",
-                "C6jx+xrigjr1AP/h//06Bw==",
-                "C6jx7RrigDr3Af++//k6Bw==",
-                "C6jxzxrifDr3AP/T//w6Ag==",
-                "C6jxuxrieTr3AAAA//g6Bw==",
-                "C6jxvBridTLSAP/1AAAyBw==",
-                "C6jxtxridDLSAP/2AAEyBg==",
-                "C6jxsxridDLWAf+d//MyBw==",
-                "C6jxhRribjLXAP/P//oyAg==",
-                "C6jxbxriazLXAP/1//8yHw==",
-                "C6jxaxriajLXAP////kyHw==",
-                "C6jxaxriZjLTAAAJ/9MyHw==",
-                "C6jxbxriUTLPAAAG/+IyBw==",
-                "C6jxcxriQzrvAP/z//86Bw==",
-                "C6jxbhriQjryAP/P//s6Bw==",
-                "C6jxVxriPzr3AP/b//w6Bw==",
-                "C6jxRhriPTr3AP/N//o6Aw==",
-                "C6jxLxriOjr3AP/4AAA6Aw==",
-                "C6jxLBriOTLXAP/9//kyBQ==",
-                "C6jxKxriNSKTAP/u//8iHw==",
-                "C6jxIxriNCKWAAAE/+siHw==",
-                "C6jxJRriKiKPAAAE/+0iHw==",
-                "C6jxJxriISKPAAAI/9kiAw==",
-                "C6jxKxriDjrvAP/0AAA6AQ==",
-                "C6jxJhriDjrzAAAB//Q6Bw==",
-                "C6jxJxriCBpxAv9s/+8aBw==",
-                "C6jw4xrh/xp3Av9a/+0aBQ==",
-                "C6jwlhrh9jLXAAAA//0yBQ=="
+              "C6jyLBrisjr3Af+4//g6BA==",
+              "C6jyCxrirjr3AAAA//s6Bw==",
+              "C6jyDBriqyKUAP/j//0iAg==",
+              "C6jx/xriqTr3AAAA//w6Ag==",
+              "C6jx/xripjr0AP/2AAE6Hg==",
+              "C6jx+xripiKUAQAM/8kiHw==",
+              "C6jyARrijCKPAAAC/+8iBg==",
+              "C6jyAxrihDrvAP/0AAM6BQ==",
+              "C6jx/hrihTrzAP/5//o6Bw==",
+              "C6jx+xrigjr1AP/h//06Bw==",
+              "C6jx7RrigDr3Af++//k6Bw==",
+              "C6jxzxrifDr3AP/T//w6Ag==",
+              "C6jxuxrieTr3AAAA//g6Bw==",
+              "C6jxvBridTLSAP/1AAAyBw==",
+              "C6jxtxridDLSAP/2AAEyBg==",
+              "C6jxsxridDLWAf+d//MyBw==",
+              "C6jxhRribjLXAP/P//oyAg==",
+              "C6jxbxriazLXAP/1//8yHw==",
+              "C6jxaxriajLXAP////kyHw==",
+              "C6jxaxriZjLTAAAJ/9MyHw==",
+              "C6jxbxriUTLPAAAG/+IyBw==",
+              "C6jxcxriQzrvAP/z//86Bw==",
+              "C6jxbhriQjryAP/P//s6Bw==",
+              "C6jxVxriPzr3AP/b//w6Bw==",
+              "C6jxRhriPTr3AP/N//o6Aw==",
+              "C6jxLxriOjr3AP/4AAA6Aw==",
+              "C6jxLBriOTLXAP/9//kyBQ==",
+              "C6jxKxriNSKTAP/u//8iHw==",
+              "C6jxIxriNCKWAAAE/+siHw==",
+              "C6jxJRriKiKPAAAE/+0iHw==",
+              "C6jxJxriISKPAAAI/9kiAw==",
+              "C6jxKxriDjrvAP/0AAA6AQ==",
+              "C6jxJhriDjrzAAAB//Q6Bw==",
+              "C6jxJxriCBpxAv9s/+8aBw==",
+              "C6jw4xrh/xp3Av9a/+0aBQ==",
+              "C6jwlhrh9jLXAAAA//0yBQ=="
             ],
             "summary": {
               "has_time_restrictions": false,
@@ -4795,35 +4775,35 @@ components:
         If set to wheelchair, the walking speed and step penalty
         are adjusted for wheelchair users.
     geocodingObject:
-       type: object
-       properties:
-         attribution:
-           type: string
-           format: uri
-           description: >-
-             A URL containing attribution information. If you are not using Stadia Maps and our
-             standard attribution already for your basemaps, you must include this attribution link
-             somewhere in your website/app.
-         query:
-           type: object
-           additionalProperties: true
-           description: >-
-             Technical details of the query. This is most useful for debugging during development.
-             See the full example for the list of properties; these should be self-explanatory, so we
-             don't enumerate them in the spec.
-         warnings:
-           type: array
-           items:
-             type: string
-           description: >-
-             An array of non-critical warnings. This is normally for informational/debugging purposes and
-             not a serious problem.
-         errors:
-           type: array
-           items:
-             type: string
-           description: >-
-             An array of more serious errors (for example, omitting a required parameter). Don’t ignore these.
+      type: object
+      properties:
+        attribution:
+          type: string
+          format: uri
+          description: >-
+            A URL containing attribution information. If you are not using Stadia Maps and our
+            standard attribution already for your basemaps, you must include this attribution link
+            somewhere in your website/app.
+        query:
+          type: object
+          additionalProperties: true
+          description: >-
+            Technical details of the query. This is most useful for debugging during development.
+            See the full example for the list of properties; these should be self-explanatory, so we
+            don't enumerate them in the spec.
+        warnings:
+          type: array
+          items:
+            type: string
+          description: >-
+            An array of non-critical warnings. This is normally for informational/debugging purposes and
+            not a serious problem.
+        errors:
+          type: array
+          items:
+            type: string
+          description: >-
+            An array of more serious errors (for example, omitting a required parameter). Don’t ignore these.
     geoJSONGeometryBase:
       type: object
       required:
@@ -6165,6 +6145,15 @@ components:
             - string
             - 'null'
           description: Errors encountered serving the request (if any).
+        query:
+          type:
+            - object
+            - 'null'
+          description: |-
+            An object containing all valid, parsed query parameters.
+            
+            For example, this will contain text and possibly other parameters for an autocomplete query.
+            This will not be present for invalid requests.
     GeonamesAddendum:
       type: object
       required:
@@ -6578,7 +6567,15 @@ components:
           oneOf:
             - type: 'null'
             - $ref: '#/components/schemas/WofContextComponent'
+        marinearea:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/WofContextComponent'
         neighbourhood:
+          oneOf:
+            - type: 'null'
+            - $ref: '#/components/schemas/WofContextComponent'
+        ocean:
           oneOf:
             - type: 'null'
             - $ref: '#/components/schemas/WofContextComponent'
@@ -6676,7 +6673,7 @@ components:
       schema:
         $ref: '#/components/schemas/searchBoundaryCircleRadius'
       description: The radius of the circle (in kilometers) to limit the search to.
-        Defaults to 50km if unspecified.
+        Defaults to 50km (search) or 1km (reverse) if unspecified.
     searchBoundaryCountry:
       name: boundary.country
       in: query
