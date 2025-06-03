@@ -32,7 +32,7 @@ abstract class BulkRequestFactory {
                     borough = query.borough,
                     locality = query.locality,
                     region = query.region,
-                    postalCode = query.postalCode,
+                    postalcode = query.postalcode,
                     country = query.country,
                     focusPointLat = query.focusPointLat,
                     focusPointLon = query.focusPointLon,

@@ -5,7 +5,7 @@ servers:
 info:
   description: >-
     The Stadia Maps Geospatial APIs provide you with the data you need to build awesome applications.
-  version: 9.2.1
+  version: 9.3.0
   title: Stadia Maps Geospatial APIs
   contact:
     name: Stadia Maps Support
@@ -17,13 +17,12 @@ paths:
       tags:
         - Geospatial
       operationId: tz-lookup
-      summary: Get the current time zone information for any point on earth.
+      summary: Get time zone information for any point on earth.
       description: >-
-        The Stadia TZ API provides time zone information, as well as information
-        about any special offset (such as DST) in effect based on the latest IANA
-        TZDB. Note that this API may not be accurate for timestamps in the past and
-        does not claim to report precise nautical times in the open ocean beyond
-        territorial waters.
+        Retrieve the time zone identifier,
+        standard UTC offset,
+        special offset (such as DST),
+        and the localized time in several common formats.
       security:
         - ApiKeyAuth: [ ]
       parameters:
@@ -64,7 +63,7 @@ paths:
             maximum: 8200290900000  # Approximately 262,000 years in the future, at which point Chrono breaks
       responses:
         '200':
-          description: The time zone metadata.
+          description: The time zone information and local time.
           content:
             application/json:
               schema:
@@ -2633,7 +2632,7 @@ components:
           $ref: '#/components/schemas/searchCounty'
         region:
           $ref: '#/components/schemas/searchRegion'
-        postalCode:
+        postalcode:
           $ref: '#/components/schemas/postalCode'
         country:
           $ref: '#/components/schemas/searchCountry'
@@ -2714,10 +2713,33 @@ components:
             this value is zero. This typically reflects Daylight Saving Time, but may indicate
             other special offsets. To get the total offset
             in effect, add `dst_offset` and `utc_offset` together.
+        timestamp:
+          type: integer
+          description: >-
+            Integer non-leap seconds since January 1, 1970 (UNIX timestamp).
+            If a timestamp is included with the request parameters, it will be echoed here.
+            Otherwise, this will contain the current timestamp.
+        local_rfc_2822_timestamp:
+          type: string
+          description: >-
+            The local time expressed as an RFC 2822 timestamp
+            (e.g. Tue, 1 Jul 2003 10:52:37 +0200).
+            If a timestamp is included in the request, it will be localized here.
+            Otherwise, this will reflect the time of the request.
+        local_rfc_3389_timestamp:
+          type: string
+          description: >-
+            The local time expressed as an RFC 3389 (ISO 8601) timestamp
+            (e.g. 2003-06-01T10:52:37+02:00).
+            If a timestamp is included in the request, it will be localized here.
+            Otherwise, this will reflect the time of the request.
       required:
         - tz_id
         - base_utc_offset
         - dst_offset
+        - timestamp
+        - local_rfc_2822_timestamp
+        - local_rfc_3389_timestamp
       example:
         {
           "tz_id": "Europe/Zurich",
@@ -4352,7 +4374,7 @@ components:
               type: string
               enum:
                 - regular
-                - false
+                - "false"
                 - dead-end
                 - fork
             density:
