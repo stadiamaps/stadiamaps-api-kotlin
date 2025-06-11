@@ -5,7 +5,7 @@ servers:
 info:
   description: >-
     The Stadia Maps Geospatial APIs provide you with the data you need to build awesome applications.
-  version: 9.3.0
+  version: 10.0.0
   title: Stadia Maps Geospatial APIs
   contact:
     name: Stadia Maps Support
@@ -698,6 +698,203 @@ paths:
                 type: FeatureCollection
       security:
         - ApiKeyAuth: [ ]
+  /geocoding/v2/search:
+    get:
+      tags:
+      - Geocoding
+      operationId: search-v2
+      parameters:
+      - name: text
+        in: query
+        description: The text to search for (the start of an address, place name, etc.).
+        required: true
+        schema:
+          type: string
+        style: form
+        example: 1600 Pennsylvania Ave NW
+      - name: focus.point.lat
+        in: query
+        description: |-
+          The latitude of a focus point.
+
+          If provided (along with longitude), the search results should be more locally relevant.
+        required: false
+        schema:
+          $ref: '#/components/schemas/Latitude'
+        style: form
+      - name: focus.point.lon
+        in: query
+        description: |-
+          The longitude of a focus point.
+
+          If provided (along with longitude), the search results should be more locally relevant.
+        required: false
+        schema:
+          $ref: '#/components/schemas/Longitude'
+        style: form
+      - name: layers
+        in: query
+        description: A list of layers to limit the search to.
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/LayerId'
+        style: form
+        explode: false
+      - name: sources
+        in: query
+        description: A list of sources to limit the search to.
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceId'
+        style: form
+        explode: false
+      - name: boundary.gid
+        in: query
+        description: |-
+          The GID of a region to limit the search to.
+
+          Note: these are not stable for all datasets! For example, OSM features may be deleted and re-added with a new ID.
+        required: false
+        schema:
+          $ref: '#/components/schemas/DocumentGid'
+        style: form
+      - name: boundary.country
+        in: query
+        description: |-
+          A list of comma-separated country codes in ISO 3116-1 alpha-2 or alpha-3 format.
+          The search will be limited to these countries.
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: false
+      - name: boundary.rect.min_lat
+        in: query
+        description: |-
+          The minimum latitude component of a search bounding box.
+
+          NOTE: Requires all other boundary.rect parameters to be specified.
+        required: false
+        schema:
+          type: number
+          format: double
+          maximum: 90
+          minimum: -90
+        style: form
+      - name: boundary.rect.min_lon
+        in: query
+        description: |-
+          The minimum longitude component of a search bounding box.
+
+          NOTE: Requires all other boundary.rect parameters to be specified.
+        required: false
+        schema:
+          $ref: '#/components/schemas/Longitude'
+        style: form
+      - name: boundary.rect.max_lat
+        in: query
+        description: |-
+          The maximum latitude component of a search bounding box.
+
+          NOTE: Requires all other boundary.rect parameters to be specified.
+        required: false
+        schema:
+          $ref: '#/components/schemas/Latitude'
+        style: form
+      - name: boundary.rect.max_lon
+        in: query
+        description: |-
+          The maximum longitude component of a search bounding box.
+
+          NOTE: Requires all other boundary.rect parameters to be specified.
+        required: false
+        schema:
+          $ref: '#/components/schemas/Longitude'
+        style: form
+      - name: boundary.circle.lat
+        in: query
+        description: |-
+          The latitude of the center of a circle to limit the search to.
+
+          NOTE: Requires boundary.circle.lon.
+        required: false
+        schema:
+          $ref: '#/components/schemas/Latitude'
+        style: form
+      - name: boundary.circle.lon
+        in: query
+        description: |-
+          The longitude of the center of a circle to limit the search to.
+
+          NOTE: Requires boundary.circle.lat.
+        required: false
+        schema:
+          $ref: '#/components/schemas/Longitude'
+        style: form
+      - name: boundary.circle.radius
+        in: query
+        description: |-
+          The radius of the circle (in kilometers) to limit the search to.
+
+          NOTE: Requires the other boundary.circle parameters to take effect.
+          Defaults to 50km if unspecified.
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+        style: form
+      - name: size
+        in: query
+        description: The maximum number of items to return from a query.
+        required: false
+        schema:
+          $ref: '#/components/schemas/QuerySizeLimit'
+        style: form
+      - name: lang
+        in: query
+        description: 'A BCP47 language tag which specifies a preference for localization of results. There is no default value, so place names will be returned as-is, which is usually in the local language. NOTE: The Accept-Language header is also respected, and many user agents will set it automatically.'
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: A GeoJSON FeatureCollection with the results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeocodeResponseEnvelope_PropertiesV2'
+        '400':
+          description: A response with a description of why the request is malformed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeocodeResponseEnvelope_PropertiesV2'
+              example:
+                features: []
+                geocoding:
+                  attribution: https://stadiamaps.com/attribution/
+                  error: missing required parameter foo
+                type: FeatureCollection
+        '500':
+          description: A response with a description of what went wrong internally
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeocodeResponseEnvelope_PropertiesV2'
+              example:
+                features: []
+                geocoding:
+                  attribution: https://stadiamaps.com/attribution/
+                  error: internal server error
+                type: FeatureCollection
+      security:
+      - ApiKeyAuth: []
   /geocoding/v2/place_details:
     get:
       tags:
@@ -2157,7 +2354,7 @@ components:
         range:
           type: boolean
           default: false
-          description: Controls whether or not the returned array is one-dimensional (height only) or two-dimensional (with a range and height). The range dimension can be used to generate a graph or steepness gradient along a route.
+          description: Controls whether the returned array is one-dimensional (height only) or two-dimensional (with a range and height). The range dimension can be used to generate a graph or steepness gradient along a route.
         height_precision:
           type: integer
           default: 0
@@ -2499,7 +2696,7 @@ components:
               description: >-
                 REQUIRED if `shape` is not present. An encoded polyline
                 (https://developers.google.com/maps/documentation/utilities/polylinealgorithm). Note that the polyline
-                must be encoded with 6 digits of precision rather than the usual 5.
+                must be encoded with 6 digits of precision rather than the default 5!
             costing:
               $ref: '#/components/schemas/mapMatchCostingModel'
             costing_options:
@@ -2744,7 +2941,10 @@ components:
         {
           "tz_id": "Europe/Zurich",
           "base_utc_offset": 3600,
-          "dst_offset": 3600
+          "dst_offset": 3600,
+          "timestamp": 1749479378,
+          "local_rfc_2822_timestamp": "Mon, 9 Jun 2025 16:29:38 +0200",
+          "local_rfc_3389_timestamp": "2025-06-09T16:29:38+02:00"
         }
     maneuverSignElement:
       type: object
@@ -3156,7 +3356,7 @@ components:
           type: string
           description: >-
             An encoded polyline (https://developers.google.com/maps/documentation/utilities/polylinealgorithm) with
-            6 digits of decimal precision.
+            6 digits of decimal precision (NOTE: Most implementations default to 5!).
         summary:
           $ref: '#/components/schemas/routeSummary'
         elevation_interval:
@@ -3174,7 +3374,6 @@ components:
             An array of elevation values sampled every `elevation_interval`.
             Units are either metric or imperial depending on the value of `units`.
       required:
-        - maneuvers
         - shape
         - summary
     routeTrip:
@@ -5387,6 +5586,7 @@ components:
           type: string
           description: >-
             An encoded polyline (https://developers.google.com/maps/documentation/utilities/polylinealgorithm).
+            Note that the polyline is encoded with 6 digits of precision rather than the default 5!
         weight:
           type: number
           format: double
@@ -5463,7 +5663,7 @@ components:
           type: string
           description: >-
             An encoded polyline (https://developers.google.com/maps/documentation/utilities/polylinealgorithm) with
-            6 digits of decimal precision.
+            6 digits of decimal precision (NOTE: most implementations default to 5).
         weight:
           type: number
           format: double
@@ -6230,7 +6430,7 @@ components:
     MatchType:
       type: string
       enum:
-        - exact
+        - match
         - interpolated
         - fallback
     OpenStreetMapAddendum:

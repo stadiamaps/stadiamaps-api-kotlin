@@ -49,6 +49,15 @@ internal class TestGeocodingApi {
     }
 
     @Test
+    fun testSearchV2() {
+        val res = service.searchV2(address).execute()
+        val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
+
+        assertEquals("EST", body.features.first().properties.context?.iso3166A3)
+        assertEquals("address", body.features.first().properties.layer)
+    }
+
+    @Test
     fun testSearchStructured() {
         val res = service.searchStructured(address = address, country = "Estonia").execute()
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
