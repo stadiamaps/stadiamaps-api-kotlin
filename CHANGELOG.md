@@ -11,8 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for the v2 `search` (forward geocoding) endpoint! The new API includes better structure, more details, and better address formatting.
 
-- val res = service.reverse(59.444351, 24.750645).execute()
-+ val res = service.reverseV2(59.444351, 24.750645).execute()
 ```diff
 - val res = service.search("Telliskivi 60a/3, Tallinn, Estonia").execute()
 + val res = service.searchV2("Telliskivi 60a/3, Tallinn, Estonia").execute()
