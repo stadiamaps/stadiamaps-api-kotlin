@@ -5,7 +5,7 @@ servers:
 info:
   description: >-
     The Stadia Maps Geospatial APIs provide you with the data you need to build awesome applications.
-  version: 10.0.0
+  version: 10.0.1
   title: Stadia Maps Geospatial APIs
   contact:
     name: Stadia Maps Support
@@ -5801,6 +5801,8 @@ components:
             - rotary
             - roundabout turn
             - notification
+            - exit roundabout
+            - exit rotary
         modifier:
           $ref: '#/components/schemas/osrmGuidanceModifier'
         exit:
