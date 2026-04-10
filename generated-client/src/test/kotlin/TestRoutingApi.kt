@@ -43,8 +43,8 @@ internal class TestRoutingApi {
         assertEquals(req.id, body.id)
         // We know that the format is Valhalla, so we get a bit lazy with non-null assertions
         assertEquals(0, body.trip!!.status)
-        assertEquals(RoutingLongUnits.miles, body.trip!!.units)
-        assertEquals(1, body.trip!!.legs.count())
+        assertEquals(RoutingLongUnits.miles, body.trip.units)
+        assertEquals(1, body.trip.legs.count())
         assertEquals(0, body.alternates?.count() ?: 0)
     }
 
@@ -69,7 +69,7 @@ internal class TestRoutingApi {
         // We know that the format is OSRM, so we get a bit lazy with non-null assertions
         assertEquals(1, body.routes!!.count())
         // Check that we have some banners
-        assert(body.routes!!.first().legs.first().steps.count { step ->
+        assert(body.routes.first().legs.first().steps.count { step ->
             (step.bannerInstructions?.count() ?: 0) > 0
         } > 0)
     }
@@ -93,8 +93,8 @@ internal class TestRoutingApi {
         assertEquals(req.id, body.id)
         // We know that the format is Valhalla, so we get a bit lazy with non-null assertions
         assertEquals(0, body.trip!!.status)
-        assertEquals(RoutingLongUnits.miles, body.trip!!.units)
-        assertEquals(1, body.trip!!.legs.count())
+        assertEquals(RoutingLongUnits.miles, body.trip.units)
+        assertEquals(1, body.trip.legs.count())
         assertEquals(1, body.alternates?.count() ?: 0)
     }
 
@@ -117,9 +117,9 @@ internal class TestRoutingApi {
         assertEquals(req.id, body.id)
         // We know that the format is Valhalla, so we get a bit lazy with non-null assertions
         assertEquals(0, body.trip!!.status)
-        assertEquals(RoutingLongUnits.miles, body.trip!!.units)
-        assertEquals(1, body.trip!!.legs.count())
-        assert((body.trip!!.legs.first().elevation?.count() ?: 0) > 1)
+        assertEquals(RoutingLongUnits.miles, body.trip.units)
+        assertEquals(1, body.trip.legs.count())
+        assert((body.trip.legs.first().elevation?.count() ?: 0) > 1)
     }
 
     @Test
@@ -146,8 +146,8 @@ internal class TestRoutingApi {
         assertEquals(req.id, body.id)
         // We know that the format is Valhalla, so we get a bit lazy with non-null assertions
         assertEquals(0, body.trip!!.status)
-        assertEquals(RoutingLongUnits.miles, body.trip!!.units)
-        assertEquals(1, body.trip!!.legs.count())
+        assertEquals(RoutingLongUnits.miles, body.trip.units)
+        assertEquals(1, body.trip.legs.count())
     }
 
     @Test
@@ -155,8 +155,9 @@ internal class TestRoutingApi {
         val req = OptimizedRouteRequest(
             id = "optimized_route",
             locations = listOf(locationA, locationB, locationC, locationA),
-            costing = MatrixCostingModel.auto,
+            costing = MatrixCostingModel.auto_traffic,
             costingOptions = costingOptions,
+            dateTime = TimeConstraintV1(type = TimeConstraintV1.Type.depart_now),
             units = DistanceUnit.mi,
             language = RoutingLanguages.enMinusGB
         )
@@ -166,8 +167,8 @@ internal class TestRoutingApi {
         assertEquals(req.id, body.id)
         // We know that the format is Valhalla, so we get a bit lazy with non-null assertions
         assertEquals(0, body.trip!!.status)
-        assertEquals(RoutingLongUnits.miles, body.trip!!.units)
-        assertTrue(body.trip!!.legs.count() > 1)
+        assertEquals(RoutingLongUnits.miles, body.trip.units)
+        assertTrue(body.trip.legs.count() > 1)
     }
 
     @Test
@@ -232,8 +233,8 @@ internal class TestRoutingApi {
         assertEquals(req.id, body.id)
         // We know that the format is Valhalla, so we get a bit lazy with non-null assertions
         assertEquals(0, body.trip!!.status)
-        assertEquals(RoutingLongUnits.miles, body.trip!!.units)
-        assertEquals(1, body.trip!!.legs.count())
+        assertEquals(RoutingLongUnits.miles, body.trip.units)
+        assertEquals(1, body.trip.legs.count())
     }
 
     @Test
@@ -245,8 +246,7 @@ internal class TestRoutingApi {
             id = "map_match",
             encodedPolyline = "ge~jkAbakppC_AJ}_@hEsCZiCXuo@dH{l@pGuaBtPjBr`@`Bt]bDpu@FbDy@fEcAjEgOja@_BfE]zDoIzTaF~MwLtZsDjJwJ~ViF`N_DjI_AzBcDbIsJ~UqIvSqLvYoAzCwJdVmLjY_DzH_FzLuYls@aYhr@Uj@iCpGu@jBmLjYeJ~T_C|FoBzEkGrO}FtNaFxGkHpQeArHcGbOeEfK}D`K}Shi@uWxp@gMv[wBnFiAtCmMl[aB`EoKrW}Mj\\\\kDlI}K~WeBdEeHxPgF~LiBjE{BnF_EpJsD|I}Rte@sNp]Uj@aQ|b@w^||@_EtJi^`_AaC~F}Qnc@cHlOgA~B}DnIqG~M_NbXeO~X{O~X}\\\\nl@oFjJyRt\\\\iJ|NiGxJ{KbPeLtO_HhIyGjI_GbHc]v_@mNnOgWdYcFvFsGtFkBiEWg@cAfAqBnBnCnFaErDiTlSiWdV_O~N{QrOcFrE{IjIaGrC}G|IeEbGwDdGeDfGsDtHmDbIgI~SyEdMaBpEeB|E_BnEsLl\\\\qLj\\\\nxAfoA`Lr`ApB|Rz@`Lr@nLp@tJfCzW~Fhi@r@bGv@tF`AnFdA|ErA~EzAxE~BzF|I`SjAxC|@nCl@zB`@lBXtBPhBJ`BDfB@dDCjDGxDqIv}BUrIKpFE|C@|CFhD`@nM`@lJPnDJhAdkA|fMob@i`@gAZfEhgAT|FpDvEnKISjr@pHfe@dHjCvM{F{Lak@q@mZq[bbC~OnAvRvWcHrVzK`GzH}TxGdDoDrKyHlVwG`TvGaTfI|EnBxBZvBGj]AnDAlC\\\\lB~K~ZtoAlEuExOy@bFi@xHFxF^fEl@rDfBxGbC~GjEdKjQbm@oG|YvBpFrMbV~GlMlGtJtFlHlEjFnGtJzDjGzDvHjBtFrD`IzB`DzD~ClDjBzDjCzChAjD~@?vF^tHx@vGpA~DbB`CpBhArCSrDk@dEkAxB_AbC_BpBkB`@K`B]pFp@fDx@tDh@`BHrCJ~CKd@S`Bk@fAcA`AtP`UxCcAfUsChq@wBSkBSiB[}BiAwMbOvMcO|BhAhBZjBRvBRwC`o@g@vJjBeC~@c@tAz@xF`NnX~p@zAlDtAvA|Bv@xBQ??fo@vsBJhDpc@`aDhBrHzCtHzHtP}Vz_@iFjIiFpIoEbIaJnPzf@d_BuAlQiA~^qd@|dMcCru@G|Cq@|^]z_@LnV^x]RtHd@xP`Bdb@pCbStApIpAjFdCnHlCtFtBlDxDxEdBfBnCnC`~B`yMhA`A|bHvr`@~CxVbF_A~a@yJbS}EvDXdM|AvJ{F{gAjtDgCddC|f@jyDbEtPxuG|scBsDxMahGvkYlXhT`DvCfChC|BjCfBlC|C`GvDdI~_@jbAhJ`Vt|AltGoH~FcTdLqDlA}Af@zhAgl@jEzSnCnNnCjOfBnL~C`XfA~J|@`Kj@hJXtHzAtm@v@xSZrEh@pDdApDfDxFaDxDiA`DG~FpBz^v@tL~@hIt@jDhAdDpYxf@feAbhB{]va@iPuXaBeD`BdDhPtX{JjM~Jz]|@TvPaOjJ~OvNtV|N|Vla@xr@zWjd@fAjBkGlHuUnXqB`CaFgIoK_QmF`HuJcPiFfHo@~BUtBFtA`@zAdA~AfQ|Vb@p@|@rJcCrCxQ|YhmNn`hAk@zECnEbV`x@dBnBlGdAlCX|m@o[tBkDdAoFf@mCdMwGvE~NzGhLzDxE}FtIcC|Bcu@xq@eBzCe@hC~x@t~ElhZpalAln@mSAjKp@pJyKpBqSxHh|KdwX~eMnjv@B_BV_BXeAt@y@fLaChRwBdO]tKXpN~Cz[`N_A`CcArIjC|qAUjHmAnG}BzEyDxDyeAli@hoDxhMpHxEaBdMh@jN~I``@jLpk@v@~D~e@nqE|@`ChBlCRzAP`B|CvHl\\\\yNlT{HCnGLvBxFn[fBzJ~A|IzAnGpBrGrCvFnOtVfEdIhEvJhBpFiLpH{d@fZiAdE\\\\hF`tDtzJCFzt@lg@mCpIiDtKhDuKlCqIrD_MbNid@sY}Q{LiJkIqHHaI]wEX{H|AwG`HaNnBzBtLjK`MxIbNrI`e@xYxKjJpIrI~HrKzG`NzErKtDdL~C`OdCtOhFvj@mLdC[F|SxzB~LyBzAxPhChYl@`E`AbExAdDjBxC|BvBtBfBlCpAdDz@nDl@|D^pGf@lSzAxIn@kAxScA|QTvAf@~AdNtSrg@taCfAxGyHfF{KdHiAp@vc@rrBw@hOk@|K~bBh|W~CnHfF`GdMnGpH`AlIm@nh@kL~gAfrOCbMbAbMD`@~@pRMhLNrRaBbB?fLvG`@zC\\\\|I~@SrOI`FzAfGoKpJqKpJ}@pLjPf\\\\rFT`H}AhBjA|HXClFyAdHuD~Jm\\\\oDsUkAwM]eMxrBqLvcCoC|{@e@jk@rBrjD`Ar|CJz{C[l~B[|nA_ExnAgGds@wGxd@}G~f@mDvSkDpTsArIuNd~@cGxi@sHxcAy@bWcAfl@y@|m@aBhz@sAbp@[hNIbDqCncBuDn|CaA~pAEvJn@bnApAtaA`@dZfErr@xDrh@`Du@|EiEp@cEfBcF^|EsAzIaFbFcFnBdEbi@h@~GpFf@n@hA^rCnBb[qALkHj@NdKFhGkAvc@e@fFuB`LiAjG_Phw@q@fDwIrb@Ev@dCdJlBdCnC~@dFDwB~AbCdGfE`J}B~Km@lD?lArAdFcEdHoDzGyFrJpXlw@rCOpCIbA`@dAdA|CrJvBlBtB@~D{AjB]~A^dBdDeAdAuGdFzElOte@b{AhAlF~@hEdQzk@zGpV`BhK|@|HdArGlBhGmAlAiMdH`EfYjInObG|E~K|EfGrB`P~D_IxD_HdBeErBn@pn@KfKPpFl@xAbBjBnC~Vl@pFdG|b@iFbBzNjcApZjiBzd@vmCvL~s@tHiCdFh]pBnKpAlI`S|iAbBzJhIoDpL~r@jXuJvDvKqEzDkBp@pCpKyPlKkHbEyHdFlDtV~DjUbDvRsEpDeBoJeCoN[dQsAfMuDpImH`GiE`Dqf@zv@}a@vq@iDlMib@br@oRvYyIrNi[vg@cC|DqDvPoS~dCgLre@mJ|RkEjHkIpKuJ|HkOfJse@bXg^|Qy^~ZiH`JeC`DeNhYw@~AkGdS{Gt]mGtr@gGbr@wAlh@mBdgAa@vUqD|oA{K~zCcLfxAaBrX`NbEvMlRwMmRaNcEGnA_@dMCnB?hU@fJTfL^bJfFSbC_EcC~DfJa@gJ`@gFR\\\\|Q^zSR`KYz[Izc@CdJK|[C~Mg@~N_@fN}@bQ}Ktt@aBvKyiFy}JgP|Uqg@ds@mD|D_yAhaByB`GgB|HaAtF[dH?hFH|HjAxGxBxG`CvDnXp^`PaX~HcJrp@_p@",
             costing = MapMatchCostingModel.pedestrian,
-            units = DistanceUnit.mi,
-            language = RoutingLanguages.enMinusGB
+            units = DistanceUnit.mi
         )
         val res = service.traceAttributes(req).execute()
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")

@@ -51,5 +51,20 @@ abstract class BulkRequestFactory {
                     lang = query.lang,
                 )
             )
+
+        fun reverseRequest(query: ReverseQuery) =
+            BulkRequest(
+                BulkRequest.Endpoint.SlashV1SlashReverse, BulkRequestQuery(
+                    pointLat = query.pointLat,
+                    pointLon = query.pointLon,
+                    boundaryCircleRadius = query.boundaryCircleRadius,
+                    boundaryCountry = query.boundaryCountry,
+                    boundaryGid = query.boundaryGid,
+                    layers = query.layers,
+                    sources = query.sources,
+                    propertySize = query.propertySize,
+                    lang = query.lang,
+                )
+            )
     }
 }

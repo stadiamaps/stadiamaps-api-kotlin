@@ -30,6 +30,16 @@ internal class TestGeospatialApi {
     }
 
     @Test
+    fun testTzLookupV2() {
+        val res = service.tzLookupV2(seoul.lat, seoul.lon).execute()
+        val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
+
+        assertEquals("Asia/Seoul", body.tzId)
+        assertTrue(body.utcOffset != 0, "Expected a non-zero UTC offset")
+        assertTrue(body.localRfc3339Timestamp.isNotEmpty(), "Expected a non-empty RFC 3339 timestamp")
+    }
+
+    @Test
     fun testElevation() {
         val req = HeightRequest(id = "Seoul", shape = listOf(seoul))
         val res = service.elevation(req).execute()
@@ -37,7 +47,7 @@ internal class TestGeospatialApi {
 
         assertEquals(req.id, body.id)
         assertTrue(body.height!!.isNotEmpty(), "Expected at least one height")
-        assertTrue(body.height!!.first() > 0, "Expected the height to be greater than zero")
+        assertTrue(body.height.first() > 0, "Expected the height to be greater than zero")
     }
 
     @Test
@@ -45,10 +55,11 @@ internal class TestGeospatialApi {
         val req = HeightRequest(id = "Seoul", shape = listOf(seoul), range = true)
         val res = service.elevation(req).execute()
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
+        val rangeHeight = body.rangeHeight ?: fail("Expected rangeHeight to be present")
 
         assertEquals(req.id, body.id)
-        assertTrue(body.rangeHeight!!.isNotEmpty(), "Expected at least one height")
-        assertEquals(0f, body.rangeHeight!!.first()[0], "Expected the range to be zero for the first element")
-        assertTrue(body.rangeHeight!!.first()[1] > 0, "Expected the height to be greater than zero")
+        assertTrue(rangeHeight.isNotEmpty(), "Expected at least one height")
+        assertEquals(0f, rangeHeight.first()[0], "Expected the range to be zero for the first element")
+        assertTrue(rangeHeight.first()[1].let { it != null && it > 0 }, "Expected the height to be greater than zero")
     }
 }

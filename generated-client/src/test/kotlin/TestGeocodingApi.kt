@@ -70,7 +70,8 @@ internal class TestGeocodingApi {
     fun testSearchBulk() {
         val reqs = listOf(
             BulkRequestFactory.searchRequest(SearchQuery(text = address)),
-            BulkRequestFactory.searchStructuredRequest(SearchStructuredQuery(address = address, country = "Estonia"))
+            BulkRequestFactory.searchStructuredRequest(SearchStructuredQuery(address = address, country = "Estonia")),
+            BulkRequestFactory.reverseRequest(ReverseQuery(pointLat = 59.444351, pointLon = 24.750645))
         )
         val res = service.searchBulk(reqs).execute()
         val body = res.body() ?: fail("Request failed: ${res.errorBody()}")
@@ -78,7 +79,6 @@ internal class TestGeocodingApi {
         for (rec in body) {
             assertEquals(200, rec.status)
             assertEquals("Estonia", rec.response!!.features.first().properties!!.country)
-            assertEquals("address", rec.response!!.features.first().properties!!.layer)
         }
     }
 

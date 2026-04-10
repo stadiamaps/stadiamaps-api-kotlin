@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.8.22" apply false
+    kotlin("jvm") version "2.3.20" apply false
 }
 
 rootProject.name = "stadiamaps-kotlin"
