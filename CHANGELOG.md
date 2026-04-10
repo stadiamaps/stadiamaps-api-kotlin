@@ -5,6 +5,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Version 7.0.0 - 2026-04-10
+
+### Added
+
+[Traffic-influenced routing](https://stadiamaps.com/products/routing-navigation/traffic-influenced-routing/)
+is now available for cars, busses, taxis, and trucks!
+Traffic-influenced routing profiles come in two variants:
+
+- Adaptive traffic profiles use either current conditions or predictive data,
+  automatically selecting the best one given your request parameters.
+- Premium traffic profiles use both current conditions and predictive data
+  to give you the best ETAs, isochrones, and routes.
+
+We've also expanded the routing API with even more flexibility:
+
+- Time-dependent routing: the new traffic profiles assume "departing now" by default.
+  But you can also specify departure or arrival at a specific time.
+  For time/distance matrix calculations, you can even specify this at the individual source/target level.
+- Penalties (routing is allowed, but discouraged, so that these features can be avoided)
+  - Private access roads
+  - Alleys
+  - (Rail) ferries
+  - Elevator use
+  - Use of residential, service, or other undesirable roads by heavy vehicles
+- Hard exclusions
+  - Cash-only tolls
+  - Unpaved roads
+- Time vs distance preference: you can specify a percentage weight between the two instead of the default (time-based) or purely shortest
+- Truck axle restrictions
+
+Finally, we've launched version 2 of our time zone API!
+There is no significant difference in the functionality,
+but we've rectified a long-standing point of confusion with how we communicated offsets from standard time.
+
+### Changed
+
+The most notable breaking changes are:
+
+- Nearest roads requests now have their own costing model type. To migrate, simply switch to the new type. No endpoint functionality has changed.
+- This release is built with Kotlin 2.3.20.
+
+We have also removed some properties from routing endpoint models which had no effect.
+For example, the Nearest Roads API does not return directions,
+but it still accepted a directions type parameter.
+Most existing code should continue to work as-is.
+
 ## Version 6.0.1 - 2025-06-12
 
 ### Fixed
