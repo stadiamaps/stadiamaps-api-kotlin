@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Version 7.1.0 - 2026-04-14
+
+### Changed
+
+- Upgraded Retrofit from 2.11.0 to 3.0.0. Retrofit 3.x maintains forward binary-compatibility with 2.x,
+  so existing code compiled against Retrofit 2.x will continue to work at runtime.
+- Upgraded OkHttp from 4.10.0 to 5.3.2. **Note for users who customize the `OkHttpClient.Builder` directly:**
+  OkHttp 5.x changes timeout APIs from `java.util.concurrent.TimeUnit` to `kotlin.time.Duration`.
+  For example, `readTimeout(30, TimeUnit.SECONDS)` becomes `readTimeout(30.seconds)`.
+  If you only use the SDK's default client configuration, no changes are needed.
+- Upgraded Moshi from 1.15.1 to 1.15.2.
+
 ## Version 7.0.0 - 2026-04-10
 
 ### Added
