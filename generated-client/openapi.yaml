@@ -6,7 +6,7 @@ info:
     name: Stadia Maps Support
     url: https://www.stadiamaps.com
     email: support@stadiamaps.com
-  version: 11.0.0
+  version: 11.1.0
 servers:
 - url: https://api.stadiamaps.com
 - url: https://api-eu.stadiamaps.com
@@ -500,25 +500,42 @@ paths:
       parameters:
       - name: address
         in: query
-        description: A street name, optionally with a house number.
+        description: A street name and optional house number together, e.g. `11 Wall St`. If you have the data available separately, you should provide the house number and street separately.
         required: false
         schema:
           type: string
-          example: 11 Wall Street
+      - name: house_number
+        in: query
+        description: A house or building number. Mutually exclusive with the `address` field. Requires `street` to also be specified.
+        required: false
+        schema:
+          type: string
+          example: '11'
+      - name: street
+        in: query
+        description: A street name. Mutually exclusive with the `address` field.
+        required: false
+        schema:
+          type: string
+          example: Wall St
+      - name: unit
+        in: query
+        description: The apartment, suite, or unit number. Requires both `house_number` and `street` to be specified. Mutually exclusive with the `address` field.
+        required: false
+        schema:
+          type: string
       - name: neighbourhood
         in: query
-        description: Varies by area, but has a locally specific meaning (NOT always an official administrative unit).
+        description: A smaller area within a locality, e.g. `Financial District`. Practices vary by area, but these are typically not distinct administrative units.
         required: false
         schema:
           type: string
-          example: Financial District
       - name: borough
         in: query
-        description: A unit within a city (not widely used, but present in places like NYC and Mexico City).
+        description: A unit within a city, e.g. `Manhattan` (not widely used outside mega cities like NYC and Mexico City).
         required: false
         schema:
           type: string
-          example: Manhattan
       - name: locality
         in: query
         description: The city, village, town, etc. that the place/address is part of.
@@ -532,7 +549,6 @@ paths:
         required: false
         schema:
           type: string
-          example: New York County
       - name: region
         in: query
         description: Typically the first administrative division within a country. For example, a US state or a Canadian province.
@@ -542,7 +558,7 @@ paths:
           example: New York
       - name: postalcode
         in: query
-        description: A mail sorting code.
+        description: A mail sorting code (e.g. a US ZIP code).
         required: false
         schema:
           type: string

@@ -64,6 +64,12 @@ internal class TestGeocodingApi {
 
         assertEquals("Estonia", body.features.first().properties!!.country)
         assertEquals("address", body.features.first().properties!!.layer)
+
+        val res2 = service.searchStructured(street = "Põhja pst", houseNumber = "27", country = "Estonia").execute()
+        val body2 = res.body() ?: fail("Request failed: ${res.errorBody()}")
+
+        assertEquals("Estonia", body2.features.first().properties!!.country)
+        assertEquals("address", body2.features.first().properties!!.layer)
     }
 
     @Test

@@ -31,7 +31,7 @@ dependencies {
     val retrofitVersion = "3.0.0"
     
     // API package
-    implementation("com.stadiamaps:api:7.1.0")
+    implementation("com.stadiamaps:api:7.2.0")
 
     // Dependencies
     implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
@@ -50,7 +50,7 @@ dependencies {
     def retrofitVersion = "3.0.0"
     
     // API package
-    implementation 'com.stadiamaps:api:7.1.0'
+    implementation 'com.stadiamaps:api:7.2.0'
 
     // Dependencies
     implementation 'com.squareup.moshi:moshi-kotlin:1.15.2'
